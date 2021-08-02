@@ -2,7 +2,9 @@
 
 const express = require('express');
 const router = express.Router();
-const path=require(`path`)
+const path = require(`path`);
+const cheerio = require('cheerio');
+const iconv1 = require('iconv').Iconv;
 require('dotenv').config({path: path.join(__dirname, "../credentials/.env")}); //dir수정
 
 // ------------------------------------------------------------------
@@ -66,12 +68,63 @@ url = url.substr(0, url.length - 1);
 // TEST
 // https://www.youtube.com/watch?v=QYJDDAml6M0
 // v = obj[id][videoId] value
-request.get(url, (err, res, body) => {
-    console.log(body);
-});
+// request.get(url, (err, res, body) => {
+//     console.log(body);
+// });
 
 router.get('/youtube', (req, res) => {
     // for display data
 })
 
-module.exports = router;//exports구문 추가
+// Python crawling v3.9
+router.get('/stock', (req, res) => {
+
+  const spawn = require('child_process').spawn;
+
+  const result = spawn('python', ['getStockJson.py']);
+
+  result.stdout.on('data', (data) => {
+    console.log(JSON.parse(data.toString()));
+    res.send(JSON.parse(data.toString()));
+  })
+
+  result.stderr.on('data', (data) => {
+    console.log(data.toString());
+  })
+
+})
+
+let result = {
+
+}
+
+router.get('/test', (req, res) => {
+  let url = "https://finance.naver.com/sise/sise_quant.nhn";
+  request({url, encoding:null}, (err, response, body) => {
+    let resultArr = [];
+    iconv = new iconv1('euc-kr', 'utf-8');
+    let htmlDoc = iconv.convert(body).toString();
+    const $ = cheerio.load(htmlDoc);
+    let colArr = $('.type_2 tbody tr').map((i, element) => {
+      let nameObj = $(element).find('td > a');
+      result['name'] = String(nameObj.text());
+      // let priceObj = $(element).find('td')
+      // result['price'] = String($(element).find('td > a').text());
+      console.log(result);
+    })
+    console.log(result);
+    res.send(resultArr);
+  })
+})
+
+// Crypto Price (Upbit)
+router.get('/coin', (req, res) => {
+  // 기준 화폐 단위 - 종목코드로 원하는 종목 탐색 가능
+  var url = `https://crix-api-endpoint.upbit.com/v1/crix/candles/days/?code=CRIX.UPBIT.KRW-BTC`;
+  request.get(url, (err, response, body) => {
+    console.log(body);
+    res.send(body);
+  });
+})
+
+module.exports = router; //exports구문 추가
