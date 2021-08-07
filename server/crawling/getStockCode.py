@@ -14,13 +14,15 @@ for i in range(2):
             pageUrl = "https://finance.naver.com/sise/sise_market_sum.nhn?sosok=" + str(i) + "&page=" + str(j)
             req = requests.get(pageUrl)
             soup = BeautifulSoup(req.content, 'html.parser', from_encoding='euc-kr')
-            naverFinanceUrl = "https://finance.naver.com"
+            naverStockUrl = "https://m.stock.naver.com/index.html#/domestic/stock/"
             hrefList = soup.select('table.type_2 > tbody > tr > td > a')
             for k, a in enumerate(hrefList, start = 1):
                 if k % 2 == 1:
                     print(a.text.strip(), a['href'])
-                    stockCodeJson[a.text.strip()] = naverFinanceUrl + a['href']
-                    count +=1
+                    string = str(a['href'])
+                    code = string[-6:]
+                    stockCodeJson[a.text.strip()] = naverStockUrl + code
+                    count += 1
                 else: continue
 
 print(json.dumps(stockCodeJson, ensure_ascii=False, indent ="\t"))
