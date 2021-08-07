@@ -16,6 +16,10 @@ function App() {
         console.log(response);
       }).catch(err => {console.log(err)});
   }
+  
+  useEffect(() => {
+    testApi();
+  }, [testValue]);
 
   const getYoutubeData = async () => {
     await axios.post(
@@ -43,10 +47,6 @@ function App() {
         console.log(response);
       }).catch(err => {console.log(err)});
   }
-
-  useEffect(() => {
-    testApi();
-  }, [testValue]);
 
   return (
     <div className="App">
