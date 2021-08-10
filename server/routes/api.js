@@ -123,7 +123,6 @@ router.post('/youtube', (req, res) => {
   optionParams.q = encodeURI(optionParams.q);
 
   var url = "https://www.googleapis.com/youtube/v3/search?";
-
   
   for(var option in optionParams){
     url += option + "=" + optionParams[option]+"&";
@@ -135,9 +134,7 @@ router.post('/youtube', (req, res) => {
   
   request.get(url, (err, response, body) => {
     result = JSON.parse(body);
-    const videoInfoList = {
-      "videos" : []
-    }
+    const videoInfoList = {"videos" : []};
     for(var i = 0; i < displayNum; i++){
       const videoInfo = {};
       // 썸네일 사이즈 (defauit : 120x90 / medium : 320x180 / high : 480x360)
@@ -153,22 +150,45 @@ router.post('/youtube', (req, res) => {
   });
 })
 
-// Python crawling v3.9
+// 거래량 상위 종목 5개
+const startTr = 3; // 종목 시작 카운트
+const topTradingStockNum = 5; // 거래량 상위 n개 종목
 router.get('/stock', (req, res) => {
 
-  const spawn = require('child_process').spawn;
+  const url = "https://finance.naver.com/sise/sise_quant.nhn";
 
-  const result = spawn('python', ['getStockJson.py']);
+  request({url, encoding:null}, (err, response, body) => {
+    let iconv = new iconv1('euc-kr', 'utf-8');
+    let htmlDoc = iconv.convert(body).toString();
+    const $ = cheerio.load(htmlDoc);
+    const topTradingStockList = {};
 
-  result.stdout.on('data', (data) => {
-    console.log(JSON.parse(data.toString()));
-    res.send(JSON.parse(data.toString()));
-  })
+    for(var j = startTr; j < startTr + topTradingStockNum; j++){
+      $(`.type_2 > tbody > tr:nth-of-type(${j})`).map((i, element) => {
+        let rank = (j - startTr + 1) + "위";
+        let title = $(element).find('td:nth-of-type(2)').find('a').text().trim();
+        let price = $(element).find('td:nth-of-type(3)').text().trim();
+        let dir = $(element).find('td:nth-of-type(4)').find('img').attr('alt').trim();
+        let changePrice = $(element).find('td:nth-of-type(4)').find('span').text().trim();
+        let changeRate = $(element).find('td:nth-of-type(5)').find('span').text().trim();
+        if(dir === "상승") changePrice = "+" + changePrice;
+        else if (dir === "하락") changePrice = "-" + changePrice;
+        let stockJson = {};
+        stockJson["rank"] = rank;
+        stockJson["title"] = title;
+        stockJson["price"] = price;
+        stockJson["dir"] = dir;
+        stockJson["changePrice"] = changePrice;
+        stockJson["changeRate"] = changeRate;
+        stockJson["url"] = stockCodeUrl[title];
+        console.log(stockJson);
+        topTradingStockList[j - startTr + 1] = stockJson;
+      })
+    }
 
-  result.stderr.on('data', (data) => {
-    console.log(data.toString());
-  })
-
+    res.status(200);
+    res.send(topTradingStockList);
+  })  
 })
 
 let stockCodeUrl = {};
@@ -179,6 +199,7 @@ fs.readFile('../server/data/stockCodeUrl_pc.json', 'utf8', (err, jsonFile) => {
     console.log("StockCode Load Fin!");
 })
 
+// 종목 가격
 router.post('/stock', (req, res) => {
   const title = req.body.keyword;
   const url = stockCodeUrl[title];
@@ -190,19 +211,17 @@ router.post('/stock', (req, res) => {
   }
   else{
     request({url, encoding:null}, (err, response, body) => {
-      iconv = new iconv1('euc-kr', 'utf-8');
+      let iconv = new iconv1('euc-kr', 'utf-8');
       let htmlDoc = iconv.convert(body).toString();
       const $ = cheerio.load(htmlDoc);
-      let priceFragments = "";
-      let changePriceFragments = "";
-      let changeRateFragments = "";
-      let priceList = $('#chart_area > .rate_info > .today > .no_today > em').map((i, element) => {
+      let priceFragments = "", changePriceFragments = "", changeRateFragments = "";
+      $('#chart_area > .rate_info > .today > .no_today > em').map((i, element) => {
         priceFragments += $(element).find('span').text().trim();
       })
-      let changePriceList = $('#chart_area > .rate_info > .today > .no_exday > em:nth-of-type(1)').map((i, element) => {
+      $('#chart_area > .rate_info > .today > .no_exday > em:nth-of-type(1)').map((i, element) => {
         changePriceFragments += $(element).find('span').text().trim();
       })
-      let changeRateList = $('#chart_area > .rate_info > .today > .no_exday > em:nth-of-type(2)').map((i, element) => {
+      $('#chart_area > .rate_info > .today > .no_exday > em:nth-of-type(2)').map((i, element) => {
         changeRateFragments += $(element).find('span').text().trim();
       })
       let price = priceFragments.substring(0, priceFragments.length / 2);
@@ -221,7 +240,8 @@ router.post('/stock', (req, res) => {
       stockInfo["price"] = price; // 현재가
       stockInfo["changePrice"] = changePrice; // 등락액
       stockInfo["changeRate"] = changeRate; // 등락률
-      stockInfo["dir"] = dir; // 방향   
+      stockInfo["dir"] = dir; // 방향  
+      stockInfo["url"] = url; 
       res.status(200);
       res.send(stockInfo)
     })
@@ -232,10 +252,10 @@ router.get('/test', (req, res) => {
   let url = "https://finance.naver.com/sise/sise_quant.nhn";
   request({url, encoding:null}, (err, response, body) => {
     let resultArr = [];
-    iconv = new iconv1('euc-kr', 'utf-8');
+    let iconv = new iconv1('euc-kr', 'utf-8');
     let htmlDoc = iconv.convert(body).toString();
     const $ = cheerio.load(htmlDoc);
-    let colArr = $('.type_2 tbody tr').map((i, element) => {
+    $('.type_2 tbody tr').map((i, element) => {
       let nameObj = $(element).find('td > a');
       result['name'] = String(nameObj.text());
       // let priceObj = $(element).find('td')
@@ -257,12 +277,35 @@ fs.readFile('../server/data/coinCode.json', 'utf8', (err, jsonFile) => {
 })
 
 router.get('/coin', (req, res) => {
-  var url = `https://crix-api-endpoint.upbit.com/v1/crix/candles/days/?code=CRIX.UPBIT.KRW-BTC`;
-  request.get(url, (err, response, body) => {
-    console.log(body);
+  // 거래량 상위 5종목
+  // 코드 난독화로 크롤링 불가능
+  var url = `https://upbit.com/exchange?code=CRIX.UPBIT.KRW-BTC`;
+  request({url, encoding:null}, (err, response, body) => {
+    let iconv = new iconv1('euc-kr', 'utf-8//translit//ignore');    
+    let htmlDoc = iconv.convert(body).toString('utf-8');
+    let htmlDocBin = new Buffer(htmlDoc, 'binary');
+    let htmlDocUtf8 = iconv.convert(htmlDocBin).toString('utf-8');
+    console.log(htmlDocUtf8);
+    const $ = cheerio.load(htmlDocUtf8);
+    const topTradingCoinList = {};
+    for(var rank = 1; rank <= 5; rank++)
+    $(`.scrollB > div > div > table > tbody > tr:nth-of-type(${rank})`).map((i, element) => {
+      let titleKor = $(element).find('td:nth-of-type(3) > a > strong').text().trim();
+      let titleEng = $(element).find('td:nth-of-type(3) > a > em').text().trim();
+      let price = $(element).find('td:nth-of-type(4) > strong').text().trim();
+      let changePrice = $(element).find('td:nth-of-type(5) > em').text().trim();
+      let changeRate = $(element).find('td:nth-of-type(5) > p').text().trim();
+      const coinJson = {};
+      coinJson['titleKor'] = titleKor;
+      coinJson['titleEng'] = titleEng;
+      coinJson['price'] = price;
+      coinJson['changePrice'] = changePrice;
+      coinJson['changeRate'] = changeRate;
+      topTradingCoinList[rank] = coinJson;
+    })
     res.status(200);
-    res.send(body);
-  });
+    res.send(topTradingCoinList);
+  })
 })
 
 router.post('/coin', (req, res) => {
@@ -282,6 +325,7 @@ router.post('/coin', (req, res) => {
       coinInfo['tradePrice'] = data[0]['tradePrice'];
       coinInfo['changePrice'] = data[0]['signedChangePrice'];
       coinInfo['changeRate'] = Math.round(data[0]['signedChangeRate'] * 10000) / 100;
+      coinInfo['url'] = "https://upbit.com/exchange?code=CRIX.UPBIT.KRW-" + code;
       console.log(coinInfo);
       res.status(200);
       res.send(coinInfo);
