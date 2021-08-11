@@ -4,7 +4,7 @@ import axios from "axios"
 
 let newsArray=[];
 let weather=[];
-
+let locationArray=[];
 
 function News(){
   const [newsKeyword,setNewsKeyword]=useState(``);
@@ -15,6 +15,7 @@ function News(){
     newsArray=data;
     //console.log(newsArray);
   }
+    
   return (
     <div>
       <input className="input" name="news" onChange={e => setNewsKeyword(e.target.value)}/>
@@ -24,10 +25,12 @@ function News(){
     {newsArray.map((item)=>{
       return(
         <div className='newsList'>
+          <a href={item.url}>
           <h3>{item.title} </h3>
           <p>{item.description}</p>
           <img src={item.thumb}/>
           <span>{item.comp}</span>
+          </a>
         </div>
       );
     })}   
@@ -35,21 +38,39 @@ function News(){
   )
 }
 
+//input 박스 담는거 하나로 통합
 function Weather(){
-  const [cityKeyword,setCity]=useState(``);
+  const [locationKeyword,setLocation]=useState(``);
+  const [location,setMyLocation]=useState({});
+ // const [cityKeyword,setCity]=useState(``);
+
+  const locationApi=async()=>{
+    const {data}=await axios.post('/api/location',{keyword:locationKeyword});
+    locationArray=data;
+    console.log(data);
+    console.log(location);
+  }
   const weatherApi=async()=>{
-    const {data}=await axios.post('/api/weather',{keyword:cityKeyword});
+    const {data}=await axios.post('/api/weather',{location: location});
     weather[0]=data;
     console.log(data);
   }
-
   return (
     <div>
-      <input className="input" name="weather" onChange={e => setCity(e.target.value)}/>
+      <input className="input" name="weather" value={locationKeyword} onChange={e =>{setLocation(e.target.value);} }/>
+      <button className="test" onClick={locationApi}>
+      주소검색하기
+      </button>
       <button className="test" onClick={weatherApi}>
       날씨검색하기
       </button>
-  
+      {locationArray.map((item)=>{
+      return(
+        <div>
+          <button onClick={ ()=>{setLocation(item.address); setMyLocation(item);}} >{item.address} </button>
+        </div>
+      );
+    })} 
       {weather.map((item)=>{
       return(
         <div className='weather'>
