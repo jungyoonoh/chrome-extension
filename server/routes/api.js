@@ -5,6 +5,7 @@ const router = express.Router();
 const path = require(`path`);
 const cheerio = require('cheerio');
 const iconv1 = require('iconv').Iconv;
+const fs = require('fs');
 require('dotenv').config({path: path.join(__dirname, "../credentials/.env")}); //dir수정
 
 // ------------------------------------------------------------------
@@ -191,6 +192,7 @@ router.post('/youtube', (req, res) => {
   // 검색 필터 기준값
   // order, relevance.. 등
   var filter = "relevance";
+  var displayNum = 5;
 
   var optionParams = {
       q:keyword,
@@ -198,55 +200,146 @@ router.post('/youtube', (req, res) => {
       type:"video",
       order:filter,
       key:process.env.GCP_API_KEY,
-      maxResults:5
+      maxResults:displayNum
   };
 
   // 한글 검색어 사용시 인코딩 과정 필요
   optionParams.q = encodeURI(optionParams.q);
 
   var url = "https://www.googleapis.com/youtube/v3/search?";
-
+  
   for(var option in optionParams){
     url += option + "=" + optionParams[option]+"&";
   }
-
+  
   url = url.substr(0, url.length - 1);
+
+  var videoBaseUrl = "https://www.youtube.com/watch?v=";
+  
   request.get(url, (err, response, body) => {
-    console.log(body);
-    res.send(body);
+    result = JSON.parse(body);
+    const videoInfoList = {"videos" : []};
+    for(var i = 0; i < displayNum; i++){
+      const videoInfo = {};
+      // 썸네일 사이즈 (defauit : 120x90 / medium : 320x180 / high : 480x360)
+      videoInfo["title"] = result["items"][i]["snippet"]["title"];
+      videoInfo["description"] = result["items"][i]["snippet"]["description"];
+      videoInfo["channelTitle"] = result["items"][i]["snippet"]["channelTitle"];
+      videoInfo["thumbnails"] = result["items"][i]["snippet"]["thumbnails"]["high"]["url"]; 
+      videoInfo["videoUrl"] = videoBaseUrl + result["items"][i]["id"]["videoId"];
+      videoInfoList["videos"].push(videoInfo);
+    }
+    console.log(videoInfoList);
+    res.send(videoInfoList);
   });
 })
 
-// Python crawling v3.9
+// 거래량 상위 종목 5개
+const startTr = 3; // 종목 시작 카운트
+const topTradingStockNum = 5; // 거래량 상위 n개 종목
 router.get('/stock', (req, res) => {
 
-  const spawn = require('child_process').spawn;
+  const url = "https://finance.naver.com/sise/sise_quant.nhn";
 
-  const result = spawn('python', ['getStockJson.py']);
+  request({url, encoding:null}, (err, response, body) => {
+    let iconv = new iconv1('euc-kr', 'utf-8');
+    let htmlDoc = iconv.convert(body).toString();
+    const $ = cheerio.load(htmlDoc);
+    const topTradingStockList = {};
 
-  result.stdout.on('data', (data) => {
-    console.log(JSON.parse(data.toString()));
-    res.send(JSON.parse(data.toString()));
-  })
+    for(var j = startTr; j < startTr + topTradingStockNum; j++){
+      $(`.type_2 > tbody > tr:nth-of-type(${j})`).map((i, element) => {
+        let rank = (j - startTr + 1) + "위";
+        let title = $(element).find('td:nth-of-type(2)').find('a').text().trim();
+        let price = $(element).find('td:nth-of-type(3)').text().trim();
+        let dir = $(element).find('td:nth-of-type(4)').find('img').attr('alt').trim();
+        let changePrice = $(element).find('td:nth-of-type(4)').find('span').text().trim();
+        let changeRate = $(element).find('td:nth-of-type(5)').find('span').text().trim();
+        if(dir === "상승") changePrice = "+" + changePrice;
+        else if (dir === "하락") changePrice = "-" + changePrice;
+        let stockJson = {};
+        stockJson["rank"] = rank;
+        stockJson["title"] = title;
+        stockJson["price"] = price;
+        stockJson["dir"] = dir;
+        stockJson["changePrice"] = changePrice;
+        stockJson["changeRate"] = changeRate;
+        stockJson["url"] = stockCodeUrl[title];
+        console.log(stockJson);
+        topTradingStockList[j - startTr + 1] = stockJson;
+      })
+    }
 
-  result.stderr.on('data', (data) => {
-    console.log(data.toString());
-  })
-
+    res.status(200);
+    res.send(topTradingStockList);
+  })  
 })
 
-let result = {
+let stockCodeUrl = {};
 
-}
+fs.readFile('../server/data/stockCodeUrl_pc.json', 'utf8', (err, jsonFile) => {
+    if(err) return console.log(err);
+    stockCodeUrl = JSON.parse(jsonFile);    
+    console.log("StockCode Load Fin!");
+})
+
+// 종목 가격
+router.post('/stock', (req, res) => {
+  const title = req.body.keyword;
+  const url = stockCodeUrl[title];
+  console.log(url);
+  const stockInfo = {};
+  if(url === undefined) {
+    stockInfo['err'] = 'Noname';
+    res.send(stockInfo)
+  }
+  else{
+    request({url, encoding:null}, (err, response, body) => {
+      let iconv = new iconv1('euc-kr', 'utf-8');
+      let htmlDoc = iconv.convert(body).toString();
+      const $ = cheerio.load(htmlDoc);
+      let priceFragments = "", changePriceFragments = "", changeRateFragments = "";
+      $('#chart_area > .rate_info > .today > .no_today > em').map((i, element) => {
+        priceFragments += $(element).find('span').text().trim();
+      })
+      $('#chart_area > .rate_info > .today > .no_exday > em:nth-of-type(1)').map((i, element) => {
+        changePriceFragments += $(element).find('span').text().trim();
+      })
+      $('#chart_area > .rate_info > .today > .no_exday > em:nth-of-type(2)').map((i, element) => {
+        changeRateFragments += $(element).find('span').text().trim();
+      })
+      let price = priceFragments.substring(0, priceFragments.length / 2);
+      let dir = changePriceFragments.substring(0, 2);
+      let changePrice = ""
+      if(dir === "상승") changePrice += "+";
+      else if(dir === "하락") changePrice += "-";
+      changePrice += changePriceFragments.substring(2, changePriceFragments.length / 2 + 1);
+      let changeRate = changeRateFragments.substring(0, changeRateFragments.length / 2) + "%";
+      console.log(title);
+      console.log(price);
+      console.log(dir);
+      console.log(changePrice);
+      console.log(changeRate);
+      stockInfo["title"] = title; // 종목명
+      stockInfo["price"] = price; // 현재가
+      stockInfo["changePrice"] = changePrice; // 등락액
+      stockInfo["changeRate"] = changeRate; // 등락률
+      stockInfo["dir"] = dir; // 방향  
+      stockInfo["url"] = url; 
+      res.status(200);
+      res.send(stockInfo)
+    })
+  }  
+})
 
 router.get('/test', (req, res) => {
   let url = "https://finance.naver.com/sise/sise_quant.nhn";
   request({url, encoding:null}, (err, response, body) => {
     let resultArr = [];
-    iconv = new iconv1('euc-kr', 'utf-8');
+    let iconv = new iconv1('euc-kr', 'utf-8');
     let htmlDoc = iconv.convert(body).toString();
     const $ = cheerio.load(htmlDoc);
-    let colArr = $('.type_2 tbody tr').map((i, element) => {
+    $('.type_2 tbody tr').map((i, element) => {
       let nameObj = $(element).find('td > a');
       result['name'] = String(nameObj.text());
       // let priceObj = $(element).find('td')
@@ -259,43 +352,67 @@ router.get('/test', (req, res) => {
 })
 
 // Crypto Info (Upbit)
-const coinCode = {
-  "플레이댑":"PLA", "이더리움":"ETH", "비트코인캐시에이비씨":"BCHA", "비트코인":"BTC", "이더리움클래식":"ETC", "비트토렌트":"BTT", "엑시인피니티":"AXS", "캐리프로토콜":"CRE", "리플":"XRP",
-  "파워렛저":"POWR", "보라":"BORA", "플로우":"FLOW", "도지코인":"DOGE", "리스크":"LSK", "에이다":"ADA", "디카르고":"DKA", "골렘":"GLM", "비트코인골드":"BTG", "무비블록":"MBL", "이오스":"EOS",
-  "메디블록":"MED", "오브스":"ORBS", "샌드박스":"SAND", "쎄타퓨엘":"THUEL", "쎄타토큰":"THETA", "아이오에스티":"IOST", "아더":"ARDR", "밀크":"MLK", "펀디엑스":"PUNDIX", "제로엑스":"ZRX",
-  "비체인":"VET", "폴카닷":"DOT", "스톰엑스":"STMX", "센티넬프로토콜":"UPP", "던프로토콜":"DAWN", "헌트":"HUNT", "넴":"XEM", "체인링크":"LINK", "트론":"TRX", "엘프":"ELF", "디센트럴랜드":"MANA",
-  "비트코인캐시":"BCH", "스텔라루멘":"XLM", "칠리즈":"CHZ", "썸씽":"SSX", "어거":"REP", "스택스":"STX", "세럼":"SRM", "메타디움":"META", "시아코인":"SC", "스테이터스네트워크토큰":"SNT",
-  "엠블":"MVL", "룸네트워크":"LOOM", "에브리피디아":"IQ", "앵커":"ANKR", "네오":"NEO", "에스티피":"STPT", "헤데라해시그래프":"HBAR", "알파쿼크":"AQT", "퀀텀":"QTUM", "스트라이크":"STRK",
-  "스와이프":"SXP", "휴먼스케이프":"HUM", "저스트":"JST", "메인프레임":"MFT", "리퍼리움":"RFR", "코박토큰":"CBK", "썬더토큰":"TT", "폴리매쓰":"POLY", "피르마체인":"FCT2", "라이트코인":"LTC",
-  "카바":"KAVA", "오미세고":"OMG", "톤":"TON", "질리카":"ZIL", "메탈":"MLT", "아이콘":"ICX", "시빅":"CVC", "그로스톨코인":"GRS", "가스":"GAS", "왁스":"WAXP", "엔진코인":"ENJ", "스트라티스":"STRAX",
-  "카이버네트워크":"KNC", "아하토큰":"AHT", "스팀":"STEEM", "모스코인":"MOC", "하이브":"HIVE", "테조스":"XTZ", "스팀달러":"SBD", "비트코인에스브이":"BSV", "온톨로지":"ONT", "온톨로지가스":"ONG",
-  "코스모스":"ATOM", "스토리지":"STORJ", "웨이브":"WAVES", "크립토닷컴체인":"CRO", "쿼크체인":"QKC", "아크":"ARK", "베이직어텐션토큰":"BAT", "아이오타":"IOTA"
-}
+let coinCode = {};
+
+fs.readFile('../server/data/coinCode.json', 'utf8', (err, jsonFile) => {
+  if(err) return console.log(err);
+  coinCode = JSON.parse(jsonFile);    
+  console.log("CoinCode Load Fin!");
+})
 
 router.get('/coin', (req, res) => {
-  var url = `https://crix-api-endpoint.upbit.com/v1/crix/candles/days/?code=CRIX.UPBIT.KRW-BTC`;
-  request.get(url, (err, response, body) => {
-    console.log(body);
-    res.send(body);
-  });
+  // 거래량 상위 5종목
+  // 코드 난독화로 크롤링 불가능
+  var url = `https://upbit.com/exchange?code=CRIX.UPBIT.KRW-BTC`;
+  request({url, encoding:null}, (err, response, body) => {
+    let iconv = new iconv1('euc-kr', 'utf-8//translit//ignore');    
+    let htmlDoc = iconv.convert(body).toString('utf-8');
+    let htmlDocBin = new Buffer(htmlDoc, 'binary');
+    let htmlDocUtf8 = iconv.convert(htmlDocBin).toString('utf-8');
+    console.log(htmlDocUtf8);
+    const $ = cheerio.load(htmlDocUtf8);
+    const topTradingCoinList = {};
+    for(var rank = 1; rank <= 5; rank++)
+    $(`.scrollB > div > div > table > tbody > tr:nth-of-type(${rank})`).map((i, element) => {
+      let titleKor = $(element).find('td:nth-of-type(3) > a > strong').text().trim();
+      let titleEng = $(element).find('td:nth-of-type(3) > a > em').text().trim();
+      let price = $(element).find('td:nth-of-type(4) > strong').text().trim();
+      let changePrice = $(element).find('td:nth-of-type(5) > em').text().trim();
+      let changeRate = $(element).find('td:nth-of-type(5) > p').text().trim();
+      const coinJson = {};
+      coinJson['titleKor'] = titleKor;
+      coinJson['titleEng'] = titleEng;
+      coinJson['price'] = price;
+      coinJson['changePrice'] = changePrice;
+      coinJson['changeRate'] = changeRate;
+      topTradingCoinList[rank] = coinJson;
+    })
+    res.status(200);
+    res.send(topTradingCoinList);
+  })
 })
 
 router.post('/coin', (req, res) => {
   // 기준 화폐 단위 - 종목코드로 원하는 종목 탐색 가능 
   const code = coinCode[req.body.keyword]
-    
+  const coinInfo = {};
   if(code === null){
-    const noName = {
-      err:"Noname"
-    }
+    coinInfo['err'] = "Noname";
     res.status(200);
-    res.send(noName);
+    res.send(coinInfo);
   }else {
-    var url = `https://crix-api-endpoint.upbit.com/v1/crix/candles/days/?code=CRIX.UPBIT.KRW-`;
-    url += code;
-    request.get(url, (err, response, body) => {
-      console.log(body);
-      res.send(body);
+    var url = `https://crix-api-endpoint.upbit.com/v1/crix/candles/days/?code=CRIX.UPBIT.KRW-` + code;
+    request.get(url, (err, response, body) => {      
+      data = JSON.parse(body);
+      // console.log(data); 전체
+      coinInfo['title'] = req.body.keyword;
+      coinInfo['tradePrice'] = data[0]['tradePrice'];
+      coinInfo['changePrice'] = data[0]['signedChangePrice'];
+      coinInfo['changeRate'] = Math.round(data[0]['signedChangeRate'] * 10000) / 100;
+      coinInfo['url'] = "https://upbit.com/exchange?code=CRIX.UPBIT.KRW-" + code;
+      console.log(coinInfo);
+      res.status(200);
+      res.send(coinInfo);
     });
   }    
 })
