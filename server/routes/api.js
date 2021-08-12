@@ -15,6 +15,40 @@ require('dotenv').config({path: path.join(__dirname, "../credentials/.env")}); /
 // 네이버 뉴스 api를 이용해 뉴스 정보 가져옴
 const request = require('request');
 
+router.get('/news',(req,res)=>{
+  const url=`https://news.naver.com/main/home.naver`;
+  const options={
+    url: url,
+    method: "GET",
+    encoding:null,
+  };
+  request(options,(error,response,body)=>{
+    if (error) {
+          console.error(error);
+          return;
+      }
+      if(response.statusCode == 200){
+        iconv = new iconv1('euc-kr', 'utf-8');
+        let htmlDoc = iconv.convert(body).toString();
+        const $=cheerio.load(htmlDoc);//encoding
+        const newsResult=[];
+        //const list_arr=$("#_rankingList0 > li > div > div > div");
+        const list_arr=$("#_rankingList0 > li");
+        list_arr.map((idx,li)=>{
+          newsResult[idx]={
+            thumb: `https://news.naver.com/${$(li).find("a").attr('href')}`,
+            title:$(li).find(".list_tit").text().trim(),
+            comp:$(li).find(".list_press").text().trim(),
+          }
+        })
+        console.log(newsResult);
+        res.status(200);
+        res.send(newsResult);
+      }
+    });
+});
+
+
 router.post('/news',(req,res)=>{
   /*const api_url = `https://openapi.naver.com/v1/search/news?query=${encodeURI(req.body.keyword)}`; //query=검색어 , sort는 정렬 순서, 기본값은 정확도 순
   const options = {
@@ -58,38 +92,88 @@ router.post('/news',(req,res)=>{
     });
 
 });
-router.post('/weather',(req,res)=>{//개선사항 에러처리 + 콜백처리 깔끔하게
-const locationUrl=`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURI(req.body.keyword)}&key=${process.env.LOCATION_API_KEY}&language=ko`;
-  //const url=`https://api.openweathermap.org/data/2.5/forecast?q=${req.body.city}&appid=${process.env.WEATHER_API_KEY}`;//5일 날씨
-let weatherResult={};
-  request.get(locationUrl, (error,response,body)=>{
-    // res.status(200).set('Content-Type','text/json;charset=utf-8');   
-    if (error) {
-          console.error(error);
-          return;
+
+router.post('/location',(req,res)=>{
+  const locationUrl=`https://dapi.kakao.com/v2/local/search/address.json?query=${encodeURI(req.body.keyword)}`;
+  const options={
+    url:locationUrl,
+    type:'GET',
+    headers: {'Authorization' : `KakaoAK ${process.env.KAKAO_LOCATION_API_KEY}`}
+  }
+  request.get(options,(error,response,body)=>{
+    if(error){
+      console.log(error);
+      return;
     }
     if(response.statusCode == 200){
-    const {results}=JSON.parse(body);
-    weatherResult={ addr:results[0].formatted_address,loaction:results[0].geometry.location}; 
-    
-    const url=`https://api.openweathermap.org/data/2.5/weather?lat=${weatherResult.loaction.lat}&lon=${weatherResult.loaction.lng}&appid=${process.env.WEATHER_API_KEY}`;
-    request.get(url,(error2,response2,body2)=>{
-      if (error2) {
-        console.error(error2);
-        return;
+      const {documents}=JSON.parse(body);
+      const addrArray=[];
+      documents.map((addr,idx)=>{
+        addrArray[idx]={
+          address:addr.address_name,
+          lat:addr.y,
+          lon:addr.x,
+        }
+      })
+      res.send(addrArray);
     }
-    if(response2.statusCode == 200){
-      res.status(200).set('Content-Type','text/json;charset=utf-8');  
-    const result= JSON.parse(body2);
-    weatherResult['main']=result.main;
-    //273.15
-    weatherResult['icon'] =`http://openweathermap.org/img/wn/${result.weather[0].icon}@2x.png`;
-    res.send(weatherResult); //string 값으로 받아옴
+  })
+
+});
+router.post(`/weather`,(req,res)=>{
+  const{location}=req.body;
+  console.log(location);
+  const url=`https://api.openweathermap.org/data/2.5/weather?lat=${location.lat}&lon=${location.lon}&appid=${process.env.WEATHER_API_KEY}`;
+  request.get(url,(error,response,body)=>{
+    console.log(url);
+    if(error){
+      console.log(error);
+    }else if(response.statusCode==200){
+      const result= JSON.parse(body);
+      console.log(url);
+      const weatherResult={
+        main : result.main,
+        icon : `http://openweathermap.org/img/wn/${result.weather[0].icon}@2x.png`,
+        addr : location.address,
+      }
+      console.log(weatherResult);
+      res.status(200).set('charset=utf-8');  
+      res.send(weatherResult); //string 값으로 받아옴
     }
   });
-}
-   });
 });
+/*router.post(`/weather`,(req,res)=>{//프라미스 형태로 변환 , 날씨 시간별로 가져오기 or 링크 연결 + 영문 한글로 변환
+  const locationUrl=`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURI(req.body.keyword)}&key=${process.env.LOCATION_API_KEY}&language=ko`;
+  //const url=`https://api.openweathermap.org/data/2.5/forecast?q=${req.body.city}&appid=${process.env.WEATHER_API_KEY}`;//5일 날씨
+  let weatherResult={};
+  console.log(locationUrl);
+    new Promise((resolve,reject)=>{
+      request.get(locationUrl,(error,response,body)=>{
+        if(error){
+          console.log(error);
+          reject(error);
+        }else if(response.statusCode==200){
+            const {results}=JSON.parse(body);
+            weatherResult={ addr:results[0].formatted_address,loaction:results[0].geometry.location}; 
+            resolve(`https://api.openweathermap.org/data/2.5/weather?lat=${weatherResult.loaction.lat}&lon=${weatherResult.loaction.lng}&appid=${process.env.WEATHER_API_KEY}`);
+        }
+      })
+    }).then((url)=>{
+      request.get(url,(error,response,body)=>{
+        if(error){
+          console.log(error);
+        }else if(response.statusCode==200){
+          const result= JSON.parse(body);
+          weatherResult['main']=result.main;
+          //273.15
+          weatherResult['icon'] =`http://openweathermap.org/img/wn/${result.weather[0].icon}@2x.png`;
+          res.status(200).set('charset=utf-8');  
+          res.send(weatherResult); //string 값으로 받아옴
+        }
+      })
+    }).catch((err)=>{console.log(err)});//error 구문
+});
+*/
 
 // ------------------------------------------------------------------
 // YOUTUBE DATA API v3. Search
