@@ -48,7 +48,6 @@ router.get('/news',(req,res)=>{
     });
 });
 
-
 router.post('/news',(req,res)=>{
   /*const api_url = `https://openapi.naver.com/v1/search/news?query=${encodeURI(req.body.keyword)}`; //query=검색어 , sort는 정렬 순서, 기본값은 정확도 순
   const options = {
