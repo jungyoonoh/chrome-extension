@@ -2,8 +2,6 @@ import 'css/App.css';
 import { useEffect, useState, useRef } from 'react';
 import axios from "axios"
 
-let newsArray=[];
-let weather=[];
 let locationArray=[];
 
 function News(){
@@ -11,29 +9,21 @@ function News(){
 
   const newsApi=async()=>{
     const {data}=await axios.post('/api/news',{keyword:newsKeyword});
-   // console.log(data);
-    newsArray=data;
-    //console.log(newsArray);
+    console.log(data);
   }
-    
+  const hotNewsApi=async()=>{
+    const {data}=await axios.get('/api/news');
+    console.log(data);
+  }
   return (
     <div>
       <input className="input" name="news" onChange={e => setNewsKeyword(e.target.value)}/>
       <button className="test" onClick={newsApi}>
       뉴스검색하기
-      </button>
-    {newsArray.map((item)=>{
-      return(
-        <div className='newsList'>
-          <a href={item.url}>
-          <h3>{item.title} </h3>
-          <p>{item.description}</p>
-          <img src={item.thumb}/>
-          <span>{item.comp}</span>
-          </a>
-        </div>
-      );
-    })}   
+      </button> 
+      <button className="test" onClick={hotNewsApi}>
+      헤드라인 뉴스 가져오기
+      </button> 
     </div>
   )
 }
@@ -42,19 +32,21 @@ function News(){
 function Weather(){
   const [locationKeyword,setLocation]=useState(``);
   const [location,setMyLocation]=useState({});
- // const [cityKeyword,setCity]=useState(``);
 
   const locationApi=async()=>{
     const {data}=await axios.post('/api/location',{keyword:locationKeyword});
     locationArray=data;
     console.log(data);
-    console.log(location);
   }
   const weatherApi=async()=>{
     const {data}=await axios.post('/api/weather',{location: location});
-    weather[0]=data;
     console.log(data);
   }
+  const baseWeather=async()=>{
+    const {data}=await axios.get('/api/weather');
+    console.log(data);
+  }
+ 
   return (
     <div>
       <input className="input" name="weather" value={locationKeyword} onChange={e =>{setLocation(e.target.value);} }/>
@@ -64,6 +56,9 @@ function Weather(){
       <button className="test" onClick={weatherApi}>
       날씨검색하기
       </button>
+      <button className="test" onClick={baseWeather}>
+      날씨 기본값
+      </button>
       {locationArray.map((item)=>{
       return(
         <div>
@@ -71,17 +66,6 @@ function Weather(){
         </div>
       );
     })} 
-      {weather.map((item)=>{
-      return(
-        <div className='weather'>
-          <h3>{item.addr} </h3>
-          <p>현재날씨 : {(item.main.temp-273.15).toFixed(2)}℃</p>
-          <p>최고기온 : {(item.main.temp_max-273.15).toFixed(2)}℃ 최저기온 : {(item.main.temp_min-273.15).toFixed(2)}℃</p>
-          <img src={item.icon}/>
-          </div>
-      );
-    })} 
-    
     </div>
   )
 }
