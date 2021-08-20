@@ -8,14 +8,61 @@ const iconv1 = require('iconv').Iconv;
 const fs = require('fs');
 require('dotenv').config({path: path.join(__dirname, "../credentials/.env")}); //dir수정
 
+
+const request = require('request');
 // ------------------------------------------------------------------
 // Naver News API
 // ------------------------------------------------------------------
 
-// 네이버 뉴스 api를 이용해 뉴스 정보 가져옴
-const request = require('request');
+// 1. 네이버 뉴스 api를 이용해 뉴스 정보 가져옴 
+// 문제점 : 핫 토픽 뉴스(get results)는 가져오지 못함 
+router.get(`/news`,(req,res)=>{
+  const api_url = `https://openapi.naver.com/v1/search/news?query=${encodeURI(`삼성전자`)}`; //query=검색어 , sort는 정렬 순서, 기본값은 정확도 순
+  const options = {
+      url: api_url,
+      headers: {'X-Naver-Client-Id':process.env.CLIENT_ID, 'X-Naver-Client-Secret': process.env.CLIENT_SECRET}
+   };
+  request.get(options, (error, response, body)=> {
+    if (!error && response.statusCode == 200) {
+      res.status(200).set('Content-Type','text/json;charset=utf-8');   
+      const {items}=JSON.parse(body);
+      items.map((item)=>{
+        item.title=item.title.replace(/<(\/b|b)([^>]*)>/gi,""); 
+        item.description=item.description.replace(/<(\/b|b)([^>]*)>/gi,""); 
+        //정규식을 이용해 들어가 html태그 제거
+      });
+      res.send(items); 
+    } else {
+      res.status(response.statusCode).end();
+      console.log('error = ' + response.statusCode);
+    }
+  })
+})
+router.post(`/news`,(req,res)=>{
+  const api_url = `https://openapi.naver.com/v1/search/news?query=${encodeURI(req.body.keyword)}`; //query=검색어 , sort는 정렬 순서, 기본값은 정확도 순
+  const options = {
+      url: api_url,
+      headers: {'X-Naver-Client-Id':process.env.CLIENT_ID, 'X-Naver-Client-Secret': process.env.CLIENT_SECRET}
+   };
+  request.get(options, (error, response, body)=> {
+    if (!error && response.statusCode == 200) {
+      res.status(200).set('Content-Type','text/json;charset=utf-8');   
+      const {items}=JSON.parse(body);
+      items.map((item)=>{
+        item.title=item.title.replace(/<(\/b|b)([^>]*)>/gi,""); 
+        item.description=item.description.replace(/<(\/b|b)([^>]*)>/gi,""); 
+        //정규식을 이용해 들어가 html태그 제거
+      });
+      res.send(items); 
+    } else {
+      res.status(response.statusCode).end();
+      console.log('error = ' + response.statusCode);
+    }
+  })
+})
 
-router.get('/news',(req,res)=>{
+//2. 크롤링을 통해 news 가져옴
+/*router.get('/news',(req,res)=>{
   const url=`https://news.naver.com/main/home.naver`;
   const options={
     url: url,
@@ -78,7 +125,7 @@ router.post('/news',(req,res)=>{
     });
 
 });
-
+*/
 router.post('/location',(req,res)=>{
   const locationUrl=`https://dapi.kakao.com/v2/local/search/address.json?query=${encodeURI(req.body.keyword)}`;
   const options={
@@ -144,6 +191,30 @@ router.post(`/weather`,(req,res)=>{
     }
   });
 });
+
+
+router.post(`/movie`,(req,res)=>{
+  const api_url = `https://openapi.naver.com/v1/search/movie.json?query=${encodeURI(req.body.keyword)}`; //query=검색어 
+  const options = {
+      url: api_url,
+      headers: {'X-Naver-Client-Id':process.env.CLIENT_ID, 'X-Naver-Client-Secret': process.env.CLIENT_SECRET}
+   };
+  request.get(options, (error, response, body)=> {
+    if (!error && response.statusCode == 200) {
+      res.status(200).set('Content-Type','text/json;charset=utf-8');   
+      const {items}=JSON.parse(body);
+      items.map((item)=>{
+        item.title=item.title.replace(/<(\/b|b)([^>]*)>/gi,""); 
+        //정규식을 이용해 들어가 html태그 제거
+      });
+      res.send(items); 
+    } else {
+      res.status(response.statusCode).end();
+      console.log('error = ' + response.statusCode);
+    }
+  })
+})
+
 
 // ------------------------------------------------------------------
 // YOUTUBE DATA API v3. Search
@@ -301,7 +372,6 @@ router.post('/stock', (req, res) => {
     })
   }  
 })
-
 router.get('/test', (req, res) => {
   let url = "https://finance.naver.com/sise/sise_quant.nhn";
   request({url, encoding:null}, (err, response, body) => {

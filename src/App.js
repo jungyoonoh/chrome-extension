@@ -70,6 +70,23 @@ function Weather(){
   )
 }
 
+function Movie(){//영화명 장
+  const [movieKeyword,setMovieKeyword]=useState(``);
+
+  const movieApi=async()=>{
+    const {data}=await axios.post('/api/movie',{keyword:movieKeyword});
+    console.log(data);
+  }
+  return (
+    <div>
+      <input className="input" name="mvoie" onChange={e => setMovieKeyword(e.target.value)}/>
+      <button className="test" onClick={movieApi}>
+      영화검색하기
+      </button> 
+    </div>
+  )
+}
+
 const Youtube = () => {
   const [youtubeKeyword, setYoutubeKeyword] = useState(null);
   const getYoutubeData = async () => {
@@ -171,6 +188,7 @@ const App = () => {
       <Coin/>
       <News/>
       <Weather/>
+      <Movie/>
     </div>
   );
 }
