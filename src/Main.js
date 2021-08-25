@@ -10,6 +10,7 @@ import { BsFillPersonFill, BsFillChatDotsFill } from 'react-icons/bs'
 
 const Main = () => {
 //    testCode
+//     test 2
     return (
         <div className="bg">
             <div className="contents">
