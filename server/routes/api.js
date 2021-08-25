@@ -285,17 +285,13 @@ router.post('/stock', (req, res) => {
       else if(dir === "하락") changePrice += "-";
       changePrice += changePriceFragments.substring(2, changePriceFragments.length / 2 + 1);
       let changeRate = changeRateFragments.substring(0, changeRateFragments.length / 2) + "%";
-      console.log(title);
-      console.log(price);
-      console.log(dir);
-      console.log(changePrice);
-      console.log(changeRate);
       stockInfo["title"] = title; // 종목명
       stockInfo["price"] = price; // 현재가
       stockInfo["changePrice"] = changePrice; // 등락액
       stockInfo["changeRate"] = changeRate; // 등락률
       stockInfo["dir"] = dir; // 방향  
-      stockInfo["url"] = url; 
+      stockInfo["url"] = url;
+      console.log(stockInfo); 
       res.status(200);
       res.send(stockInfo)
     })
@@ -333,7 +329,7 @@ fs.readFile('../server/data/coinCode.json', 'utf8', (err, jsonFile) => {
 router.get('/coin', (req, res) => {
   // 거래량 상위 5종목
   // 코드 난독화로 크롤링 불가능
-  var url = `https://upbit.com/exchange?code=CRIX.UPBIT.KRW-BTC`;
+  var url = `https://upbit.com/exchange?code=CRIX.UPBIT.KRW-BTC`; 
   request({url, encoding:null}, (err, response, body) => {
     let iconv = new iconv1('euc-kr', 'utf-8//translit//ignore');    
     let htmlDoc = iconv.convert(body).toString('utf-8');
@@ -371,7 +367,7 @@ router.post('/coin', (req, res) => {
     res.status(200);
     res.send(coinInfo);
   }else {
-    var url = `https://crix-api-endpoint.upbit.com/v1/crix/candles/days/?code=CRIX.UPBIT.KRW-` + code;
+    var url = `https://crix-api-endpoint.upbit.com/v1/crix/candles/days/?code=CRIX.UPBIT.KRW-` + code; // Upbit API
     request.get(url, (err, response, body) => {      
       data = JSON.parse(body);
       // console.log(data); 전체
