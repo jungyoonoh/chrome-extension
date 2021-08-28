@@ -35,7 +35,7 @@ const Main = () => {
                         dots={true}
                         >
                             <MainSlide></MainSlide>
-                            <MainSlide></MainSlide>
+                            
                     </Slider>
                 </div>
                 <footer>
