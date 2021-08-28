@@ -148,15 +148,23 @@ const Coin = () => {
   )
 }
 
-const StorageEx = () => {
-  const [keyword, setKeyword] = useState(null);
+const Indices = () => {
+  
+  const getIndices = async () => {
+    await axios.get(
+      '/api/indices'
+      ).then(response => {
+        console.log(response);
+      }).catch(err => {
+        console.log(err);
+      })
+  }
 
   return (
-    <div id="storage-test">
-      <p>키워드 저장</p>
-      <input className="input" name="storage" placeholder="저장하기" onChange={e => setKeyword(e.target.value)}></input>
-      <button className="test">
-        키워드 정보 저장하기
+    <div id="indices-test">
+      <p>지수 정보 가져오기</p>
+      <button className="test" onClick={getIndices}>
+        (KOSPI, KOSDAK)
       </button>
     </div>
   )
@@ -185,6 +193,7 @@ const App = () => {
       <Coin/>
       <News/>
       <Weather/>
+      <Indices/>
     </div>
   );
 }

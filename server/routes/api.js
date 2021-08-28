@@ -14,6 +14,7 @@ require('dotenv').config({path: path.join(__dirname, "../credentials/.env")}); /
 
 // 네이버 뉴스 api를 이용해 뉴스 정보 가져옴
 const request = require('request');
+const { response } = require('express');
 
 router.get('/news',(req,res)=>{
   const url=`https://news.naver.com/main/home.naver`;
@@ -215,7 +216,7 @@ router.get('/stock', (req, res) => {
     let iconv = new iconv1('euc-kr', 'utf-8');
     let htmlDoc = iconv.convert(body).toString();
     const $ = cheerio.load(htmlDoc);
-    const topTradingStockList = {};
+    const topTradingStockList = [];
 
     for(var j = startTr; j < startTr + topTradingStockNum; j++){
       $(`.type_2 > tbody > tr:nth-of-type(${j})`).map((i, element) => {
@@ -238,10 +239,9 @@ router.get('/stock', (req, res) => {
         stockJson["changeRate"] = changeRate;
         stockJson["url"] = stockCodeUrl[title];
         console.log(stockJson);
-        topTradingStockList[j - startTr + 1] = stockJson;
+        topTradingStockList.push(stockJson);
       })
     }
-
     res.status(200);
     res.send(topTradingStockList);
   })  
@@ -298,6 +298,49 @@ router.post('/stock', (req, res) => {
       res.send(stockInfo)
     })
   }  
+})
+
+router.get('/indices', (req, res) => {
+  let url = "https://finance.naver.com/";
+  const indicesInfo = [];
+  request({url, encoding:null}, (err, response, body) => {
+    let iconv = new iconv1('euc-kr', 'utf-8');
+    let htmlDoc = iconv.convert(body).toString();
+    const $ = cheerio.load(htmlDoc);
+
+    // KOSPI
+    let kospiInfo = {};
+    let kospiIndexValue = $('.kospi_area > .heading_area .num_quot').find('.num').text().trim();
+    let changeKospiIndex = $('.kospi_area > .heading_area .num_quot').find('.num2').text().trim();
+    let changeKospiRate = $('.kospi_area > .heading_area .num_quot').find('.num3').text().trim();
+    let kospiDir = $('.kospi_area > .heading_area .num_quot > .num3').find('.blind').text().trim();
+    let kospiDirText = $('.kospi_area > .heading_area .num_quot').find('.blind').text().trim();
+
+    kospiInfo["title"] = "KOSPI";
+    kospiInfo["value"] = kospiIndexValue;
+    kospiInfo["changeIndex"] = kospiDir + changeKospiIndex;
+    kospiInfo["changeRate"] = changeKospiRate;
+    kospiInfo["dir"] = kospiDirText[1] + kospiDirText[2];
+    indicesInfo.push(kospiInfo);
+
+    // KOSDAQ
+    let kosdaqInfo = {};
+    let kosdaqIndexValue = $('.kosdaq_area > .heading_area .num_quot').find('.num').text().trim();
+    let changeKosdaqIndex = $('.kosdaq_area > .heading_area .num_quot').find('.num2').text().trim();
+    let changeKosdaqRate = $('.kosdaq_area > .heading_area .num_quot').find('.num3').text().trim();
+    let kosdaqDir = $('.kosdaq_area > .heading_area .num_quot > .num3').find('.blind').text().trim();
+    let kosdaqDirText = $('.kosdaq_area > .heading_area .num_quot').find('.blind').text().trim();
+
+    kosdaqInfo["title"] = "KOSDAQ";
+    kosdaqInfo["value"] = kosdaqIndexValue;
+    kosdaqInfo["changeIndex"] = kosdaqDir + changeKosdaqIndex;
+    kosdaqInfo["changeRate"] = changeKosdaqRate;
+    kosdaqInfo["dir"] = kosdaqDirText[1] + kosdaqDirText[2];
+    indicesInfo.push(kosdaqInfo);
+
+    console.log(indicesInfo);
+    res.send(indicesInfo);
+  })
 })
 
 router.get('/test', (req, res) => {
