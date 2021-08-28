@@ -3,10 +3,11 @@ import { useEffect, useState, useRef } from 'react';
 import axios from "axios"
 import Slider from "react-slick";
 // import Slide from "./Slide"
+import MainSlide from 'slides/MainSlide';
+
 
 import { AiFillHome } from 'react-icons/ai'
 import { BsFillPersonFill, BsFillChatDotsFill } from 'react-icons/bs'
-import MainSlide from 'slides/MainSlide';
 // https://react-icons.github.io/react-icons
 
 const Main = () => {
@@ -26,17 +27,15 @@ const Main = () => {
                             <BsFillChatDotsFill className="header-icon" />
                         </button>
                     </div>
-
                 </header>
                 <div className="main">
                     <Slider
                         style={{}}
                         speed={500}
-                        adaptiveHeight={true}
                         dots={true}
                         >
                             <MainSlide></MainSlide>
-                            <div><p>asdf</p></div>
+                            <MainSlide></MainSlide>
                     </Slider>
                 </div>
                 <footer>
