@@ -9,7 +9,6 @@ body {
 }
 
 .bg {
-    background-color: aqua;
     width: 100vh;
     height: 100vh;
     padding-left: 20%;
@@ -17,7 +16,7 @@ body {
 }
 
 .contents {
-    background-color: blanchedalmond;
+    
 }
 
 header {

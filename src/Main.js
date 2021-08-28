@@ -3,6 +3,8 @@ import { useEffect, useState, useRef } from 'react';
 import axios from "axios"
 import Slider from "react-slick";
 // import Slide from "./Slide"
+import MainSlide from 'slides/MainSlide';
+
 
 import { AiFillHome } from 'react-icons/ai'
 import { BsFillPersonFill, BsFillChatDotsFill } from 'react-icons/bs'
@@ -11,7 +13,7 @@ import { BsFillPersonFill, BsFillChatDotsFill } from 'react-icons/bs'
 const Main = () => {
    
     return (
-        <div className="bg">
+        <div className="bg" style={{backgroundImage:"https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2850&q=80"}}>
             <div className="contents">
                 <header>
                     <div className="header-icons">
@@ -25,17 +27,15 @@ const Main = () => {
                             <BsFillChatDotsFill className="header-icon" />
                         </button>
                     </div>
-
                 </header>
                 <div className="main">
                     <Slider
                         style={{}}
-                        infinite={true}
                         speed={500}
-                        // adaptiveHeight={true}
-                        swipeToSlide={true}
-                        focusOnSelect={true}
+                        dots={true}
                         >
+                            <MainSlide></MainSlide>
+                            
                     </Slider>
                 </div>
                 <footer>
