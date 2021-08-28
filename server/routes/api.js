@@ -14,6 +14,7 @@ require('dotenv').config({path: path.join(__dirname, "../credentials/.env")}); /
 
 // 네이버 뉴스 api를 이용해 뉴스 정보 가져옴
 const request = require('request');
+const { response } = require('express');
 
 router.get('/news',(req,res)=>{
   const url=`https://news.naver.com/main/home.naver`;
@@ -151,7 +152,42 @@ router.post(`/weather`,(req,res)=>{
 // ------------------------------------------------------------------
 
 router.get('/youtube', (req, res) => {
-    // for display data
+  // https://www.googleapis.com/youtube/v3/videos?chart=mostPopular&key={YOUR_API_KEY}&part=snippet&maxResults=4
+  var url = "https://www.googleapis.com/youtube/v3/videos?";
+  var displayNum = 5;
+  var optionParams = {
+    part:"snippet",
+    chart:"mostPopular",
+    regionCode:"kr",
+    key:process.env.GCP_API_KEY,
+    maxResults: displayNum
+  };
+
+  for(var option in optionParams){
+    url += option + "=" + optionParams[option]+"&";
+  }
+  
+  url = url.substr(0, url.length - 1);
+
+  var videoBaseUrl = "https://www.youtube.com/watch?v=";
+
+  request.get(url, (err, response, body) => {
+    result = JSON.parse(body);
+    const videoInfoList = [];
+    // console.log(body);
+    for(var i = 0; i < displayNum; i++){
+      const videoInfo = {};
+      // 썸네일 사이즈 (defauit : 120x90 / medium : 320x180 / high : 480x360)
+      videoInfo["title"] = result["items"][i]["snippet"]["title"];
+      // videoInfo["description"] = result["items"][i]["snippet"]["description"];
+      videoInfo["channelTitle"] = result["items"][i]["snippet"]["channelTitle"];
+      videoInfo["thumbnails"] = result["items"][i]["snippet"]["thumbnails"]["high"]["url"]; 
+      videoInfo["videoUrl"] = videoBaseUrl + result["items"][i]["id"];
+      videoInfoList.push(videoInfo);
+    }
+    console.log(videoInfoList);
+    res.send(videoInfoList);
+  });
 })
 
 router.post('/youtube', (req, res) => {
@@ -188,7 +224,7 @@ router.post('/youtube', (req, res) => {
   
   request.get(url, (err, response, body) => {
     result = JSON.parse(body);
-    const videoInfoList = {"videos" : []};
+    const videoInfoList = [];
     for(var i = 0; i < displayNum; i++){
       const videoInfo = {};
       // 썸네일 사이즈 (defauit : 120x90 / medium : 320x180 / high : 480x360)
@@ -197,7 +233,7 @@ router.post('/youtube', (req, res) => {
       videoInfo["channelTitle"] = result["items"][i]["snippet"]["channelTitle"];
       videoInfo["thumbnails"] = result["items"][i]["snippet"]["thumbnails"]["high"]["url"]; 
       videoInfo["videoUrl"] = videoBaseUrl + result["items"][i]["id"]["videoId"];
-      videoInfoList["videos"].push(videoInfo);
+      videoInfoList.push(videoInfo);
     }
     console.log(videoInfoList);
     res.send(videoInfoList);
@@ -215,7 +251,7 @@ router.get('/stock', (req, res) => {
     let iconv = new iconv1('euc-kr', 'utf-8');
     let htmlDoc = iconv.convert(body).toString();
     const $ = cheerio.load(htmlDoc);
-    const topTradingStockList = {};
+    const topTradingStockList = [];
 
     for(var j = startTr; j < startTr + topTradingStockNum; j++){
       $(`.type_2 > tbody > tr:nth-of-type(${j})`).map((i, element) => {
@@ -238,10 +274,9 @@ router.get('/stock', (req, res) => {
         stockJson["changeRate"] = changeRate;
         stockJson["url"] = stockCodeUrl[title];
         console.log(stockJson);
-        topTradingStockList[j - startTr + 1] = stockJson;
+        topTradingStockList.push(stockJson);
       })
     }
-
     res.status(200);
     res.send(topTradingStockList);
   })  
@@ -298,6 +333,49 @@ router.post('/stock', (req, res) => {
       res.send(stockInfo)
     })
   }  
+})
+
+router.get('/indices', (req, res) => {
+  let url = "https://finance.naver.com/";
+  const indicesInfo = [];
+  request({url, encoding:null}, (err, response, body) => {
+    let iconv = new iconv1('euc-kr', 'utf-8');
+    let htmlDoc = iconv.convert(body).toString();
+    const $ = cheerio.load(htmlDoc);
+
+    // KOSPI
+    let kospiInfo = {};
+    let kospiIndexValue = $('.kospi_area > .heading_area .num_quot').find('.num').text().trim();
+    let changeKospiIndex = $('.kospi_area > .heading_area .num_quot').find('.num2').text().trim();
+    let changeKospiRate = $('.kospi_area > .heading_area .num_quot').find('.num3').text().trim();
+    let kospiDir = $('.kospi_area > .heading_area .num_quot > .num3').find('.blind').text().trim();
+    let kospiDirText = $('.kospi_area > .heading_area .num_quot').find('.blind').text().trim();
+
+    kospiInfo["title"] = "KOSPI";
+    kospiInfo["value"] = kospiIndexValue;
+    kospiInfo["changeIndex"] = kospiDir + changeKospiIndex;
+    kospiInfo["changeRate"] = changeKospiRate;
+    kospiInfo["dir"] = kospiDirText[1] + kospiDirText[2];
+    indicesInfo.push(kospiInfo);
+
+    // KOSDAQ
+    let kosdaqInfo = {};
+    let kosdaqIndexValue = $('.kosdaq_area > .heading_area .num_quot').find('.num').text().trim();
+    let changeKosdaqIndex = $('.kosdaq_area > .heading_area .num_quot').find('.num2').text().trim();
+    let changeKosdaqRate = $('.kosdaq_area > .heading_area .num_quot').find('.num3').text().trim();
+    let kosdaqDir = $('.kosdaq_area > .heading_area .num_quot > .num3').find('.blind').text().trim();
+    let kosdaqDirText = $('.kosdaq_area > .heading_area .num_quot').find('.blind').text().trim();
+
+    kosdaqInfo["title"] = "KOSDAQ";
+    kosdaqInfo["value"] = kosdaqIndexValue;
+    kosdaqInfo["changeIndex"] = kosdaqDir + changeKosdaqIndex;
+    kosdaqInfo["changeRate"] = changeKosdaqRate;
+    kosdaqInfo["dir"] = kosdaqDirText[1] + kosdaqDirText[2];
+    indicesInfo.push(kosdaqInfo);
+
+    console.log(indicesInfo);
+    res.send(indicesInfo);
+  })
 })
 
 router.get('/test', (req, res) => {

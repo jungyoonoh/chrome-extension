@@ -24,3 +24,6 @@ yarn-error.log*
 
 # credentials
 /server/credentials/.env
+
+# database
+/server/database/config
