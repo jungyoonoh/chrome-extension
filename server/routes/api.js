@@ -152,7 +152,42 @@ router.post(`/weather`,(req,res)=>{
 // ------------------------------------------------------------------
 
 router.get('/youtube', (req, res) => {
-    // for display data
+  // https://www.googleapis.com/youtube/v3/videos?chart=mostPopular&key={YOUR_API_KEY}&part=snippet&maxResults=4
+  var url = "https://www.googleapis.com/youtube/v3/videos?";
+  var displayNum = 5;
+  var optionParams = {
+    part:"snippet",
+    chart:"mostPopular",
+    regionCode:"kr",
+    key:process.env.GCP_API_KEY,
+    maxResults: displayNum
+  };
+
+  for(var option in optionParams){
+    url += option + "=" + optionParams[option]+"&";
+  }
+  
+  url = url.substr(0, url.length - 1);
+
+  var videoBaseUrl = "https://www.youtube.com/watch?v=";
+
+  request.get(url, (err, response, body) => {
+    result = JSON.parse(body);
+    const videoInfoList = [];
+    // console.log(body);
+    for(var i = 0; i < displayNum; i++){
+      const videoInfo = {};
+      // 썸네일 사이즈 (defauit : 120x90 / medium : 320x180 / high : 480x360)
+      videoInfo["title"] = result["items"][i]["snippet"]["title"];
+      // videoInfo["description"] = result["items"][i]["snippet"]["description"];
+      videoInfo["channelTitle"] = result["items"][i]["snippet"]["channelTitle"];
+      videoInfo["thumbnails"] = result["items"][i]["snippet"]["thumbnails"]["high"]["url"]; 
+      videoInfo["videoUrl"] = videoBaseUrl + result["items"][i]["id"];
+      videoInfoList.push(videoInfo);
+    }
+    console.log(videoInfoList);
+    res.send(videoInfoList);
+  });
 })
 
 router.post('/youtube', (req, res) => {
@@ -189,7 +224,7 @@ router.post('/youtube', (req, res) => {
   
   request.get(url, (err, response, body) => {
     result = JSON.parse(body);
-    const videoInfoList = {"videos" : []};
+    const videoInfoList = [];
     for(var i = 0; i < displayNum; i++){
       const videoInfo = {};
       // 썸네일 사이즈 (defauit : 120x90 / medium : 320x180 / high : 480x360)
@@ -198,7 +233,7 @@ router.post('/youtube', (req, res) => {
       videoInfo["channelTitle"] = result["items"][i]["snippet"]["channelTitle"];
       videoInfo["thumbnails"] = result["items"][i]["snippet"]["thumbnails"]["high"]["url"]; 
       videoInfo["videoUrl"] = videoBaseUrl + result["items"][i]["id"]["videoId"];
-      videoInfoList["videos"].push(videoInfo);
+      videoInfoList.push(videoInfo);
     }
     console.log(videoInfoList);
     res.send(videoInfoList);

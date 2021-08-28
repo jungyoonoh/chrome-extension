@@ -72,6 +72,17 @@ function Weather(){
 
 const Youtube = () => {
   const [youtubeKeyword, setYoutubeKeyword] = useState(null);
+
+  const getYoutubePopularVideoData = async () =>{
+    await axios.get(
+      '/api/youtube',
+    ).then(response => {
+      console.log(response);
+    }).catch(err => {
+      console.log(err);
+    })
+  }
+
   const getYoutubeData = async () => {
     await axios.post(
       '/api/youtube', 
@@ -80,12 +91,17 @@ const Youtube = () => {
         console.log(response);
       }).catch(err => {console.log(err)});
   }
+
   return (
     <div id="youtube-test">
       <p>유튜브 키워드 검색</p>
       <input className="input" name="youtube" placeholder="검색하기" onChange={e => setYoutubeKeyword(e.target.value)}></input>
       <button className="test" onClick={getYoutubeData}>
         유튜브 검색 결과 가져오기
+      </button>
+      <p>실시간 인기 급상승 동영상</p>
+      <button className="test" onClick={getYoutubePopularVideoData}>
+        실시간 인기 급상승 동영상 가져오기
       </button>
     </div>
   )
