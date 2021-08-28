@@ -148,6 +148,20 @@ const Coin = () => {
   )
 }
 
+const StorageEx = () => {
+  const [keyword, setKeyword] = useState(null);
+
+  return (
+    <div id="storage-test">
+      <p>키워드 저장</p>
+      <input className="input" name="storage" placeholder="저장하기" onChange={e => setKeyword(e.target.value)}></input>
+      <button className="test">
+        키워드 정보 저장하기
+      </button>
+    </div>
+  )
+}
+
 const App = () => {
 
   const [testValue, setTestValue] = useState(null); 
