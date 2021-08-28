@@ -17,6 +17,7 @@ app.use(cors());
 app.use(cookieParser());
 
 app.use('/api', api);
+
 app.listen(port, () => {
     console.log(`express is running on ${port}`);
 });

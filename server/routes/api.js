@@ -222,7 +222,9 @@ router.get('/stock', (req, res) => {
         let rank = (j - startTr + 1) + "위";
         let title = $(element).find('td:nth-of-type(2)').find('a').text().trim();
         let price = $(element).find('td:nth-of-type(3)').text().trim();
-        let dir = $(element).find('td:nth-of-type(4)').find('img').attr('alt').trim();
+        let dir = $(element).find('td:nth-of-type(4)').find('img').toString();
+        if(dir.length !== 0) dir = $(element).find('td:nth-of-type(4)').find('img').attr('alt').trim();
+        else dir = "보합";
         let changePrice = $(element).find('td:nth-of-type(4)').find('span').text().trim();
         let changeRate = $(element).find('td:nth-of-type(5)').find('span').text().trim();
         if(dir === "상승") changePrice = "+" + changePrice;
