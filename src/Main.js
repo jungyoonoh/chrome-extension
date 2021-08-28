@@ -6,12 +6,13 @@ import Slider from "react-slick";
 
 import { AiFillHome } from 'react-icons/ai'
 import { BsFillPersonFill, BsFillChatDotsFill } from 'react-icons/bs'
+import MainSlide from 'slides/MainSlide';
 // https://react-icons.github.io/react-icons
 
 const Main = () => {
    
     return (
-        <div className="bg">
+        <div className="bg" style={{backgroundImage:"https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2850&q=80"}}>
             <div className="contents">
                 <header>
                     <div className="header-icons">
@@ -30,12 +31,12 @@ const Main = () => {
                 <div className="main">
                     <Slider
                         style={{}}
-                        infinite={true}
                         speed={500}
-                        // adaptiveHeight={true}
-                        swipeToSlide={true}
-                        focusOnSelect={true}
+                        adaptiveHeight={true}
+                        dots={true}
                         >
+                            <MainSlide></MainSlide>
+                            <div><p>asdf</p></div>
                     </Slider>
                 </div>
                 <footer>

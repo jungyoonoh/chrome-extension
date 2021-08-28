@@ -6,11 +6,9 @@ body {
       sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: red;
   }
 
 .bg {
-    background-color: aqua;
     width: 100vh;
     height: 100vh;
     padding-left: 20%;

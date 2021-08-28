@@ -1,0 +1,13 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+.google-search {
+    display: flex;
+    flex-direction: row;
+
+}
+
+.google-search-button {
+
+}
