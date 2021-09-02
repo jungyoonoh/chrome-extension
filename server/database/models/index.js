@@ -1,4 +1,4 @@
-const Sequelize = require('sequelize');//클래스
+const Sequelize = require('sequelize'); //클래스
 const User = require('./user');
 const Keyword = require('./keyword');
 const Session = require('./session');

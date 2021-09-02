@@ -1,6 +1,6 @@
 const Sequelize=require('sequelize');
 
-module.exports=class Keyword extends Sequelize.Model{
+module.exports = class Keyword extends Sequelize.Model{
     static init (sequelize){
         return super.init({
             created_at : {
