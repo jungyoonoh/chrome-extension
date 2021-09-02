@@ -241,6 +241,14 @@ router.post('/youtube', (req, res) => {
   });
 })
 
+let stockDirection = {}
+
+fs.readFile('../server/data/stockDirection.json', 'utf8', (err, jsonFile) => {
+  if(err) return console.log(err);
+  stockDirection = JSON.parse(jsonFile);    
+  console.log("StockDirection Load Fin!");
+})
+
 // 거래량 상위 종목 5개
 const startTr = 3; // 종목 시작 카운트
 const topTradingStockNum = 5; // 거래량 상위 n개 종목
@@ -260,12 +268,12 @@ router.get('/stock', (req, res) => {
         let title = $(element).find('td:nth-of-type(2)').find('a').text().trim();
         let price = $(element).find('td:nth-of-type(3)').text().trim();
         let dir = $(element).find('td:nth-of-type(4)').find('img').toString();
-        if(dir.length !== 0) dir = $(element).find('td:nth-of-type(4)').find('img').attr('alt').trim();
-        else dir = "보합";
+        if(dir.length == 0) dir = "보합";
+        else dir = stockDirection[$(element).find('td:nth-of-type(4)').find('img').attr('src').toString()];
         let changePrice = $(element).find('td:nth-of-type(4)').find('span').text().trim();
         let changeRate = $(element).find('td:nth-of-type(5)').find('span').text().trim();
-        if(dir === "상승") changePrice = "+" + changePrice;
-        else if (dir === "하락") changePrice = "-" + changePrice;
+        if(dir === "상승" || dir === "상한") changePrice = "+" + changePrice;
+        else if (dir === "하락" || dir === "하한") changePrice = "-" + changePrice;
         let stockJson = {};
         stockJson["rank"] = rank;
         stockJson["title"] = title;
