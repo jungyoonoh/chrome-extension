@@ -9,7 +9,7 @@ const CardM=(props)=>{
             className="card-m" 
             style={{}}>
                 <div className="card-thumbnail">
-                    <img src={thumbnail} style={{width:70, height:70,marginRight:5}} />
+                    <img src={thumbnail} style={{width:70, height:70,marginRight:5, borderRadius:7}} />
                 </div>
                 <div>
                     <div >
