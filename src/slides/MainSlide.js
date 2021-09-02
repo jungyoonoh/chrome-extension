@@ -4,6 +4,7 @@ import axios from "axios"
 import {GrFormRefresh, GrYoutube, } from 'react-icons/gr'
 import {BiSearch, BiNews} from 'react-icons/bi'
 import {RiStockFill, } from 'react-icons/ri'
+
 import CardM from "../components/CardM"
 
 function MainSlide() {
@@ -86,7 +87,7 @@ function MainSlide() {
         <div style={{}}>
             <link rel="stylesheet" type="text/css" charset="UTF-8" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css" /> 
             <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css" />
-            <div style={{display:'flex', flexDirection:'row', justifyContent:'space-around'}}>
+            <div style={{display:'flex', flexDirection:'row', justifyContent:'space-around', marginBottom:10}}>
                 <div>
                     <div className='google-search' style={{}}>
                         <div className='google-search-left'></div>
@@ -94,7 +95,7 @@ function MainSlide() {
                         <button 
                             className='google-search-button'
                             onClick={googleSearch}>
-                            <BiSearch style={{width:30, height:30, color:'white'}}/>
+                            <BiSearch style={{width:30, height:30, color:'#cbf3f0'}}/>
                         </button>
                     </div>
                     <div className='frequent-sites' style={{backgroundColor:'yellow'}}>
@@ -103,24 +104,34 @@ function MainSlide() {
                 </div>
                 <div className='stock-top5'>
                     <div style={{display:'flex', flexDirection:'row', alignItems:'center'}}>
-                        <RiStockFill style={{width:40, height:40, marginRight:5}}/>
-                        <h1>주식 거래량 Top 5</h1>
-                        <button className='refresh-button' onClick={()=>{setIsStockLoaded(false)}}><GrFormRefresh style={{width:40, height:40}}/></button>
+                        <RiStockFill className='h1-icon'/>
+                        <h2>주식 거래량 Top 5</h2>
+                        <button className='refresh-button' onClick={()=>{setIsStockLoaded(false)}}>
+                            <GrFormRefresh className='h1-icon' style={{color:'white'}}/>
+                        </button>
                     </div>
                     {stockTop5.map((item)=>{
+                            // changePrice: "+30"
+                            // changeRate: "+1.50%"
+                            // dir: "상승"
+                            // price: "2,025"
+                            // rank: "1위"
+                            // title: "KODEX 200선물인버스2X"
+                            // url: "https://finance.naver.com
+                        const dir = item.dir
                         return(
                             <div
                                 className='stock'
-                                style={{display:'flex', flexDirection:'row', backgroundColor:'pink', marginBottom:3}}
                                 onClick={()=>{openStockDetail(item.url)}}>
+                                <p style={{marginRight:3, color:'#595959'}}>{item.rank}</p>
                                 <h3
                                     style={{width:150, textOverflow:'ellipsis',overflow:'hidden', whiteSpace:'nowrap'}}>
                                     {item.title}
                                 </h3>
-                                <p>
+                                <p style={{width:80, color:dir=="상승"||dir=="상한"?'#ed0101':dir=="하락"||dir=="하한"?'#0c44ac':'#595959'}}>
                                     {item.price}
                                 </p>
-                                <p>{item.changeRate}</p>
+                                <p style={{width:80, color:dir=="상승"||dir=="상한"?'#970005':dir=="하락"||dir=="하한"?'#000052':'#595959', fontWeight:dir=="상한"||dir=="하한"?'bold':'normal'}}>{item.changeRate}</p>
                             </div>
 
                         )
@@ -130,8 +141,8 @@ function MainSlide() {
             <div style={{display:'flex', flexDirection:'row', justifyContent:'space-around'}}>
                 <div className='youtube-top5'>
                     <div style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
-                        <GrYoutube style={{width:40, height:40, marginRight:5}}/>
-                        <h1>유튜브 인기 동영상</h1>
+                        <GrYoutube className='h1-icon'/>
+                        <h2>유튜브 인기 동영상</h2>
                     </div>
                     {youtubeTop5.map((item, index)=>{
                         return(
@@ -145,8 +156,8 @@ function MainSlide() {
                 </div>
                 <div className='news-top5'>
                     <div style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
-                        <BiNews style={{width:40, height:40, marginRight:5}}/>
-                        <h1>언론사별 가장 많이 본 뉴스</h1>
+                        <BiNews className='h1-icon'/>
+                        <h2>언론사별 가장 많이 본 뉴스</h2>
                     </div>
                     {newsTop5.map((item, index)=>{
                         return(
