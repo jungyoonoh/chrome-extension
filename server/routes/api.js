@@ -36,9 +36,10 @@ router.get('/news',(req,res)=>{
         const list_arr=$("#_rankingList0 > li");
         list_arr.map((idx,li)=>{
           newsResult[idx]={
-            thumb: `https://news.naver.com/${$(li).find("a").attr('href')}`,
+            thumb: $(li).find("a>img").attr('src'),
             title:$(li).find(".list_tit").text().trim(),
             comp:$(li).find(".list_press").text().trim(),
+
           }
         })
         res.status(200);

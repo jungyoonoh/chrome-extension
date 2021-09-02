@@ -15,17 +15,17 @@ body {
     padding-right: 20%;
 }
 
+
 .contents {
-    
+    background-color: rgba(0,0,0,0.2);
 }
 
 header {
-    background-color: chocolate;
     height: 10vh;
 }
 
 .header-icons {
-    background-color: khaki;
+    
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -44,7 +44,7 @@ header {
     height:30px;
 }
 .main {
-    background-color: darkcyan;
+    
     height: 80vh;
 }
 
