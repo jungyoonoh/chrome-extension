@@ -1,6 +1,6 @@
 import 'css/Main.css';
-import { useEffect, useState, useRef } from 'react';
-import axios from "axios"
+// import { useEffect, useState, useRef } from 'react';
+// import axios from "axios"
 import Slider from "react-slick";
 // import Slide from "./Slide"
 import MainSlide from 'slides/MainSlide';

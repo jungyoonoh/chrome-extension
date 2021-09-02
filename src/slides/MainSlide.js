@@ -45,11 +45,7 @@ function MainSlide() {
         window.open(url)
     }
     // 4. 유튜브 top 5
-    // channelTitle: "김안드"
-    // description: "ㅠㅠ."
-    // thumbnails: "https://i.ytimg.com/vi/LABr_O5MQKY/hqdefault.jpg"
-    // title: "ㅁㄴㅇㄹ"
-    // videoUrl: "https://www.youtube.com/watch?v=LABr_O5MQKY"
+
     const [youtubeTop5, setYoutubeTop5] = useState([])
     const [isYoutubeLoaded, setIsYoutubeLoaded] = useState(false)
     useEffect(()=>{
@@ -112,14 +108,18 @@ function MainSlide() {
                         <button className='refresh-button' onClick={()=>{setIsStockLoaded(false)}}><GrFormRefresh style={{width:40, height:40}}/></button>
                     </div>
                     {stockTop5.map((item)=>{
-                        var dir = item.dir
                         return(
                             <div
                                 className='stock'
                                 style={{display:'flex', flexDirection:'row', backgroundColor:'pink', marginBottom:3}}
                                 onClick={()=>{openStockDetail(item.url)}}>
-                                <p>{item.title} </p>
-                                <p>{item.price} </p>
+                                <h3
+                                    style={{width:150, textOverflow:'ellipsis',overflow:'hidden', whiteSpace:'nowrap'}}>
+                                    {item.title}
+                                </h3>
+                                <p>
+                                    {item.price}
+                                </p>
                                 <p>{item.changeRate}</p>
                             </div>
 
@@ -129,7 +129,7 @@ function MainSlide() {
             </div>
             <div style={{display:'flex', flexDirection:'row', justifyContent:'space-around'}}>
                 <div className='youtube-top5'>
-                    <div style={{display:'flex', flexDirection:'row', alignItems:'center'}}>
+                    <div style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
                         <GrYoutube style={{width:40, height:40, marginRight:5}}/>
                         <h1>유튜브 인기 동영상</h1>
                     </div>
@@ -137,14 +137,14 @@ function MainSlide() {
                         return(
                             <div
                                 className='youtube'
-                                onClick={()=>{openYoutubeDetail(item.thumbnails)}}>
+                                onClick={()=>{openYoutubeDetail(item.videoUrl)}}>
                                 <CardM title={item.title} thumbnail={item.thumbnails} name={item.channelTitle}/>
                             </div>
                         )
                     })}
                 </div>
                 <div className='news-top5'>
-                    <div style={{display:'flex', flexDirection:'row', alignItems:'center'}}>
+                    <div style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
                         <BiNews style={{width:40, height:40, marginRight:5}}/>
                         <h1>언론사별 가장 많이 본 뉴스</h1>
                     </div>
@@ -152,7 +152,7 @@ function MainSlide() {
                         return(
                             <div
                                 className='news'
-                                onClick={()=>{openNewsDetail(item.thumb)}}>
+                                onClick={()=>{openNewsDetail(item.url)}}>
                                 <CardM title={item.title} thumbnail={item.thumb} name={item.comp}/>
                             </div>
                         )

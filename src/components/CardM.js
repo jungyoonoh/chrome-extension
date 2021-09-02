@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+// import { useEffect, useState } from 'react';
 import '../css/Components.css';
 
 const CardM=(props)=>{
@@ -7,17 +7,16 @@ const CardM=(props)=>{
     return (
         <div 
             className="card-m" 
-            style={{width:200, height:60, borderRadius:5, border:'0px solid black', display:'flex', flexDirection:'row', backgroundColor:'white'}}>
-            {/* 그림자 넣기 */}
+            style={{}}>
                 <div className="card-thumbnail">
-                    <img src={thumbnail} style={{width:45, height:45}}/>
+                    <img src={thumbnail} style={{width:70, height:70,marginRight:5}} />
                 </div>
                 <div>
                     <div >
-                        <h3>{title}</h3>
+                        <h3 style={{textOverflow:'ellipsis', overflow:'hidden'}}>{title}</h3>
                     </div>
                     <div>
-                        <p>{name}</p>
+                        <p style={{textOverflow:'ellipsis', overflow:'hidden'}}>{name}</p>
                     </div>
                 </div>
         </div>
