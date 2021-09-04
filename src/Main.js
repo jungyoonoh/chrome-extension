@@ -16,6 +16,9 @@ const Main = () => {
     const onClickHome = ()=>{
         slideRef.current.slickGoTo(0);
     }
+    const onClickInfo =()=>{
+        window.open("https://accessible-hedgehog-77e.notion.site/Toast-daca621379c844da84071452a7f46734")
+    }
     return (
         <div className="contents">
             <header>
@@ -27,7 +30,7 @@ const Main = () => {
                         <AiFillHome className="header-icon" onClick={onClickHome}/>
                     </button>
                     <button className="header-button">
-                        <FaInfoCircle className="header-icon" />
+                        <FaInfoCircle className="header-icon" onClick={onClickInfo}/>
                     </button>
                 </div>
             </header>

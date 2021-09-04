@@ -1,4 +1,4 @@
-import { useEffect, useState,} from 'react';
+import { useEffect, useState,forwardRef, useImperativeHandle} from 'react';
 import 'css/MainSlide.css';
 import axios from "axios"
 import {GrFormRefresh, GrYoutube, } from 'react-icons/gr'
@@ -31,8 +31,16 @@ function MainSlide() {
     // 3. 주식 top 5
     const [stockTop5, setStockTop5] = useState([])
     const [isStockLoaded, setIsStockLoaded] = useState(false)
+    const defultData = [
+        {rank:'1위', title:' ', price:'0', changeRate:'0', url:''},
+        {rank:'2위', title:' ', price:'0', changeRate:'0', url:''},
+        {rank:'3위', title:' ', price:'0', changeRate:'0', url:''},
+        {rank:'4위', title:' ', price:'0', changeRate:'0', url:''},
+        {rank:'5위', title:' ', price:'0', changeRate:'0', url:''},
+    ]
     useEffect(()=>{
         if (!isStockLoaded){
+            setStockTop5(defultData)
             axios.get(
                 '/api/stock'
               ).then(response => {
@@ -69,8 +77,10 @@ function MainSlide() {
     // 5. 뉴스 top 5
     const [newsTop5, setNewsTop5] = useState([])
     const [isNewsLoaded, setIsNewsLoaded] = useState(false)
+    
     useEffect(()=>{
         if (!isNewsLoaded){
+            
             axios.get(
                 '/api/news'
               ).then(response => {
@@ -84,7 +94,7 @@ function MainSlide() {
     const openNewsDetail =(url)=>{
         window.open(url)
     }
-
+    
     return (
         <div style={{}}>
             <link rel="stylesheet" type="text/css" charset="UTF-8" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css" /> 
@@ -105,7 +115,7 @@ function MainSlide() {
                     </div>
                 </div>
                 <div className='stock-top5'>
-                    <div style={{display:'flex', flexDirection:'row', alignItems:'center'}}>
+                    <div style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
                         <RiStockFill className='h1-icon'/>
                         <h2>주식 거래량 Top 5</h2>
                         <button className='refresh-button' onClick={()=>{setIsStockLoaded(false)}}>

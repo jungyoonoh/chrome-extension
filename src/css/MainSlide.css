@@ -99,10 +99,12 @@ h2 {
 
 .stock {
     display: flex;
+    width: 360px;
+    height: 20px;
     flex-direction: row;
     background-color: white;
     margin-bottom: 3px;
-    padding: 3px;
+    padding: 5px;
     /* border: 2px solid #daddd8; */
     border-radius: 20px;
     justify-content: center;
