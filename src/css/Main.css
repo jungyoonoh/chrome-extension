@@ -40,7 +40,7 @@ header {
     border-width: 0px;
 }
 .header-button:hover > .header-icon {
-    color:darkgray;
+    color: #2ec4b6;
 }
 
 .header-icon {

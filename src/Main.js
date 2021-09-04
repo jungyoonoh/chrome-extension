@@ -1,5 +1,5 @@
 import 'css/Main.css';
-// import { useEffect, useState, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 // import axios from "axios"
 import Slider from "react-slick";
 // import Slide from "./Slide"
@@ -12,7 +12,10 @@ import {FaInfoCircle, } from 'react-icons/fa'
 // https://react-icons.github.io/react-icons
 
 const Main = () => {
-
+    const slideRef = useRef(null)
+    const onClickHome = ()=>{
+        slideRef.current.slickGoTo(0);
+    }
     return (
         <div className="contents">
             <header>
@@ -21,7 +24,7 @@ const Main = () => {
                         <BsFillPersonFill className="header-icon" />
                     </button>
                     <button className="header-button">
-                        <AiFillHome className="header-icon" />
+                        <AiFillHome className="header-icon" onClick={onClickHome}/>
                     </button>
                     <button className="header-button">
                         <FaInfoCircle className="header-icon" />
@@ -33,6 +36,7 @@ const Main = () => {
                     style={{}}
                     speed={500}
                     dots={true}
+                    ref={slideRef}
                 >
                     <MainSlide></MainSlide>
                     <StockSlide></StockSlide>

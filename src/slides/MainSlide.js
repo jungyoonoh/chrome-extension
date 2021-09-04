@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState,} from 'react';
 import 'css/MainSlide.css';
 import axios from "axios"
 import {GrFormRefresh, GrYoutube, } from 'react-icons/gr'
-import {BiSearch, BiNews} from 'react-icons/bi'
+import {BiSearch, BiNews, BiRefresh} from 'react-icons/bi'
 import {RiStockFill, } from 'react-icons/ri'
 
 import CardM from "../components/CardM"
@@ -16,11 +16,13 @@ function MainSlide() {
         console.log(e.target.value)
     }
     const googleSearch=()=>{
-        let link="https://www.google.com/search?q="+searchTerm
-        window.open(link)
+        if (searchTerm!=""){
+            let link="https://www.google.com/search?q="+searchTerm
+            window.open(link)
+        }
     }
     const onCheckEnter = (e)=>{
-        if (e.key=='Enter' && isInputFocused){
+        if (e.key==='Enter' && isInputFocused){
             googleSearch()
         }
     }
@@ -95,7 +97,7 @@ function MainSlide() {
                         <button 
                             className='google-search-button'
                             onClick={googleSearch}>
-                            <BiSearch style={{width:30, height:30, color:'#cbf3f0'}}/>
+                            <BiSearch className='google-search-icon'/>
                         </button>
                     </div>
                     <div className='frequent-sites' style={{backgroundColor:'yellow'}}>
@@ -107,7 +109,7 @@ function MainSlide() {
                         <RiStockFill className='h1-icon'/>
                         <h2>주식 거래량 Top 5</h2>
                         <button className='refresh-button' onClick={()=>{setIsStockLoaded(false)}}>
-                            <GrFormRefresh className='h1-icon' style={{color:'white'}}/>
+                            <BiRefresh className='refresh-icon'/>
                         </button>
                     </div>
                     {stockTop5.map((item)=>{
@@ -128,10 +130,10 @@ function MainSlide() {
                                     style={{width:150, textOverflow:'ellipsis',overflow:'hidden', whiteSpace:'nowrap'}}>
                                     {item.title}
                                 </h3>
-                                <p style={{width:80, color:dir=="상승"||dir=="상한"?'#ed0101':dir=="하락"||dir=="하한"?'#0c44ac':'#595959'}}>
+                                <p style={{width:80, color:dir==="상승"||dir==="상한"?'#ed0101':dir==="하락"||dir==="하한"?'#0c44ac':'#595959'}}>
                                     {item.price}
                                 </p>
-                                <p style={{width:80, color:dir=="상승"||dir=="상한"?'#970005':dir=="하락"||dir=="하한"?'#000052':'#595959', fontWeight:dir=="상한"||dir=="하한"?'bold':'normal'}}>{item.changeRate}</p>
+                                <p style={{width:80, color:dir==="상승"||dir==="상한"?'#970005':dir==="하락"||dir==="하한"?'#000052':'#595959', fontWeight:dir==="상한"||dir==="하한"?'bold':'normal'}}>{item.changeRate}</p>
                             </div>
 
                         )

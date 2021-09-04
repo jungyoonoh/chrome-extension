@@ -29,12 +29,22 @@
     border: 0px;
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
-    background-color: #cccccc;
+    background-color: #2ec4b6;
+    display: flex;
     align-items: center;
     justify-content: center;
 }
 
+.google-search-icon {
+    width: 30px;
+    height: 30px;
+    color: white;
+}
 
+.google-search-button :hover{
+    /* color: #CCCCCC; */
+    color:rgba(0, 0, 0, 0.1)
+}
 
 .refresh-button {
     background-color: rgba(0, 0, 0, 0);
@@ -43,6 +53,16 @@
     width: auto;
     height: auto;
 }
+.refresh-button :hover {
+    color: #2ec4b6;
+}
+.refresh-icon {
+    width: 40px;
+    height: 40px;
+    color: white;
+}
+
+
 .news {
     display: flex;
     flex-direction: row;
