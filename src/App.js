@@ -1,5 +1,6 @@
 import 'css/App.css';
-import { useEffect, useState, } from 'react';
+import { useState, useEffect } from 'react';
+import React  from 'react';
 import axios from "axios"
 
 let locationArray=[];
@@ -165,7 +166,6 @@ const Coin = () => {
 }
 
 const Indices = () => {
-  
   const getIndices = async () => {
     await axios.get(
       '/api/indices'
@@ -186,21 +186,37 @@ const Indices = () => {
   )
 }
 
-const App = () => {
+function Google() {
+  const [isLogin, setIsLogin] = useState(false);
 
-  const [testValue, setTestValue] = useState(null); 
-
-  const testApi = async () => {
-    await axios.get('/api/news')
-      .then(response => {
+  const getLoginInfo = async () => {
+    await axios.get(
+      '/auth'
+      ).then(response => {
         console.log(response);
-      }).catch(err => {console.log(err)});
+        if (response.data == "") setIsLogin(false);
+        else setIsLogin(true);
+      }).catch(err => {
+        console.log(err);
+      })
   }
-  
-  useEffect(() => {
-    testApi();
-  }, [testValue]);
 
+  useEffect(() => {
+      getLoginInfo()
+  }, [isLogin])
+
+  return (
+    <div id="google-test">
+      {
+        isLogin ?       
+          <a href="/auth/logout">로그아웃</a> : 
+          <a href="/auth/google">구글 아이디로 로그인</a>
+      }
+    </div>
+  )
+}
+
+const App = () => {
 
   return (
     <div className="App">
@@ -210,6 +226,7 @@ const App = () => {
       <News/>
       <Weather/>
       <Indices/>
+      <Google/>
     </div>
   );
 }
