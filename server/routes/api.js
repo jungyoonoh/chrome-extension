@@ -2,10 +2,10 @@
 
 const express = require('express');
 const router = express.Router();
-const path = require(`path`);
 const cheerio = require('cheerio');
 const iconv1 = require('iconv').Iconv;
 const fs = require('fs');
+const path = require('path');
 require('dotenv').config({path: path.join(__dirname, "../credentials/.env")}); //dir수정
 
 // ------------------------------------------------------------------
@@ -14,7 +14,6 @@ require('dotenv').config({path: path.join(__dirname, "../credentials/.env")}); /
 
 // 네이버 뉴스 api를 이용해 뉴스 정보 가져옴
 const request = require('request');
-const { response } = require('express');
 
 router.get('/news',(req,res)=>{
   const url=`https://news.naver.com/main/home.naver`;
@@ -43,7 +42,6 @@ router.get('/news',(req,res)=>{
           }
         })
         res.status(200);
-        console.log(newsResult);
         res.send(newsResult);
       }
     });
@@ -74,7 +72,6 @@ router.post('/news',(req,res)=>{
             comp:$(div).find("a.info.press").text().replace("언론사 선정",''),
           }
         })
-        console.log(newsResult);
         res.send(newsResult);
       }
     });
@@ -103,7 +100,6 @@ router.post('/location',(req,res)=>{
           lon:addr.x,
         }
       })
-      console.log(addrArray);
       res.send(addrArray);
     }
   })
@@ -121,7 +117,6 @@ router.get(`/weather`,(req,res)=>{
         icon : `http://openweathermap.org/img/wn/${result.weather[0].icon}@2x.png`,
         addr : `서울특별시 중구 회현동1가`,
       }
-      console.log(weatherResult);
       res.status(200).set('charset=utf-8');  
       res.send(weatherResult); //string 값으로 받아옴
     }
@@ -140,7 +135,6 @@ router.post(`/weather`,(req,res)=>{
         icon : `http://openweathermap.org/img/wn/${result.weather[0].icon}@2x.png`,
         addr : location.address,
       }
-      console.log(weatherResult);
       res.status(200).set('charset=utf-8');  
       res.send(weatherResult); //string 값으로 받아옴
     }
@@ -175,7 +169,6 @@ router.get('/youtube', (req, res) => {
   request.get(url, (err, response, body) => {
     result = JSON.parse(body);
     const videoInfoList = [];
-    // console.log(body);
     for(var i = 0; i < displayNum; i++){
       const videoInfo = {};
       // 썸네일 사이즈 (defauit : 120x90 / medium : 320x180 / high : 480x360)
@@ -186,7 +179,6 @@ router.get('/youtube', (req, res) => {
       videoInfo["videoUrl"] = videoBaseUrl + result["items"][i]["id"];
       videoInfoList.push(videoInfo);
     }
-    console.log(videoInfoList);
     res.send(videoInfoList);
   });
 })
@@ -236,7 +228,6 @@ router.post('/youtube', (req, res) => {
       videoInfo["videoUrl"] = videoBaseUrl + result["items"][i]["id"]["videoId"];
       videoInfoList.push(videoInfo);
     }
-    console.log(videoInfoList);
     res.send(videoInfoList);
   });
 })
@@ -265,8 +256,6 @@ router.get('/stock', (req, res) => {
     for(var j = startTr; j < startTr + topTradingStockNum; j++){
       $(`.type_2 > tbody > tr:nth-of-type(${j})`).map((i, element) => {
         let rank = (j - startTr + 1) + "위";
-        let title = $(element).find('td:nth-of-type(2)').find('a').text().trim();
-        let price = $(element).find('td:nth-of-type(3)').text().trim();
         let dir = $(element).find('td:nth-of-type(4)').find('img').toString();
         if(dir.length == 0) dir = "보합";
         else dir = stockDirection[$(element).find('td:nth-of-type(4)').find('img').attr('src').toString()];
@@ -276,13 +265,12 @@ router.get('/stock', (req, res) => {
         else if (dir === "하락" || dir === "하한") changePrice = "-" + changePrice;
         let stockJson = {};
         stockJson["rank"] = rank;
-        stockJson["title"] = title;
-        stockJson["price"] = price;
+        stockJson["title"] = $(element).find('td:nth-of-type(2)').find('a').text().trim();
+        stockJson["price"] = $(element).find('td:nth-of-type(3)').text().trim();
         stockJson["dir"] = dir;
         stockJson["changePrice"] = changePrice;
         stockJson["changeRate"] = changeRate;
         stockJson["url"] = stockCodeUrl[title];
-        console.log(stockJson);
         topTradingStockList.push(stockJson);
       })
     }
@@ -303,7 +291,6 @@ fs.readFile('../server/data/stockCodeUrl_pc.json', 'utf8', (err, jsonFile) => {
 router.post('/stock', (req, res) => {
   const title = req.body.keyword;
   const url = stockCodeUrl[title];
-  console.log(url);
   const stockInfo = {};
   if(url === undefined) {
     stockInfo['err'] = 'Noname';
@@ -337,7 +324,6 @@ router.post('/stock', (req, res) => {
       stockInfo["changeRate"] = changeRate; // 등락률
       stockInfo["dir"] = dir; // 방향  
       stockInfo["url"] = url;
-      console.log(stockInfo); 
       res.status(200);
       res.send(stockInfo)
     })
@@ -382,7 +368,6 @@ router.get('/indices', (req, res) => {
     kosdaqInfo["dir"] = kosdaqDirText[1] + kosdaqDirText[2];
     indicesInfo.push(kosdaqInfo);
 
-    console.log(indicesInfo);
     res.send(indicesInfo);
   })
 })
@@ -399,9 +384,7 @@ router.get('/test', (req, res) => {
       result['name'] = String(nameObj.text());
       // let priceObj = $(element).find('td')
       // result['price'] = String($(element).find('td > a').text());
-      console.log(result);
     })
-    console.log(result);
     res.send(resultArr);
   })
 })
@@ -424,7 +407,6 @@ router.get('/coin', (req, res) => {
     let htmlDoc = iconv.convert(body).toString('utf-8');
     let htmlDocBin = new Buffer(htmlDoc, 'binary');
     let htmlDocUtf8 = iconv.convert(htmlDocBin).toString('utf-8');
-    console.log(htmlDocUtf8);
     const $ = cheerio.load(htmlDocUtf8);
     const topTradingCoinList = {};
     for(var rank = 1; rank <= 5; rank++)
@@ -459,13 +441,11 @@ router.post('/coin', (req, res) => {
     var url = `https://crix-api-endpoint.upbit.com/v1/crix/candles/days/?code=CRIX.UPBIT.KRW-` + code; // Upbit API
     request.get(url, (err, response, body) => {      
       data = JSON.parse(body);
-      // console.log(data); 전체
       coinInfo['title'] = req.body.keyword;
       coinInfo['tradePrice'] = data[0]['tradePrice'];
       coinInfo['changePrice'] = data[0]['signedChangePrice'];
       coinInfo['changeRate'] = Math.round(data[0]['signedChangeRate'] * 10000) / 100;
       coinInfo['url'] = "https://upbit.com/exchange?code=CRIX.UPBIT.KRW-" + code;
-      console.log(coinInfo);
       res.status(200);
       res.send(coinInfo);
     });
