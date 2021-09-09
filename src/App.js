@@ -5,6 +5,32 @@ import axios from "axios"
 
 let locationArray=[];
 
+const addLocalKeyword=()=>{//비 로그인시 키워드 저장하는 방법 : local storage 사용
+  let arr=[];
+  let word="word";
+  if(localStorage.keyword!=undefined){
+      arr=JSON.parse(localStorage.keyword);
+      arr.push(word);
+      localStorage.setItem('keyword',JSON.stringify(arr));
+  }else {
+      arr.push(word);
+      localStorage.setItem('keyword',JSON.stringify(arr));
+  }  
+
+  console.log(localStorage.keyword)
+  //전체 삭제시 localStorage.removeItem('keyword');
+};
+const removeKeyword=()=>{// 비로그인 시 키워드 삭제하는 방법
+  let arr=[];
+  const idx=1;
+  arr=JSON.parse(localStorage.keyword);
+  if(arr.length==1) localStorage.removeItem('keyword');
+  else {
+      arr.splice(idx,idx);
+      localStorage.setItem('keyword',JSON.stringify(arr));
+  }
+  console.log(localStorage.keyword)
+};
 function News(){
   const [newsKeyword,setNewsKeyword]=useState(``);
 
