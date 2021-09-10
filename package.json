@@ -18,7 +18,7 @@
     "fs": "0.0.1-security",
     "http-proxy-middleware": "^2.0.1",
     "iconv": "^3.0.0",
-    "mongoose": "^6.0.4",
+    "mongoose": "^6.0.5",
     "mysql2": "^2.3.0",
     "nodemon": "^2.0.12",
     "passport": "^0.4.1",

@@ -20,19 +20,20 @@ passport.use(new GoogleStrategy({
         callbackURL: '/auth/google/callback'
     }, async (accessToken, refreshToken, profile, done) => {
         // MongoDB
-        const newUser = {
-            googleId: profile.id,
-            displayName: profile.displayName,
-            firstName: profile.name.givenName,
-            lastName: profile.name.familyName,
-            image: profile.photos[0].value
-        }
-
+    
         try {
             let user = await User.findOne({googleId: profile.id})
             if (user){
                 done(null, user);
             }else{
+                const newUser = {
+                    googleId: profile.id,
+                    displayName: profile.displayName,
+                    firstName: profile.name.givenName,
+                    lastName: profile.name.familyName,
+                    image: profile.photos[0].value,
+                    keyword:[],
+                }
                 user = await User.create(newUser);
                 done(null, user);
             }

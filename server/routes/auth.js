@@ -3,7 +3,7 @@ const router   = express.Router();
 const passport = require('../config/passport.js');
 const auth = require('../middleware/auth')
 
-router.get('/', (req, res) => {
+router.get('/', (req, res) => {//로그인 상태 확인
     if(auth){
         console.log(req.user);
         res.send(req.user);
@@ -22,6 +22,7 @@ router.get('/login', (req,res) => {
 
 router.get('/logout', (req,res) =>  {
   req.logout();
+  req.session.destroy();
   res.redirect('http://localhost:3000/');
 });
 

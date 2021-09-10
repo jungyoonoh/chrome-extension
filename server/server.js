@@ -18,6 +18,7 @@ connectDB();
 
 const api = require('./routes/api');
 const auth = require('./routes/auth');
+const database = require('./routes/database');
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -30,8 +31,8 @@ app.use(
         secret:'keyboard cat', 
         resave: false, 
         saveUninitialized:false,
-        store: MongoStore.create({
-            mongoUrl: process.env.MONGO_URI
+        store: MongoStore.create({//session 저장장소
+            mongoUrl: process.env.MONGO_TEST
         })
     })
 );
@@ -48,7 +49,7 @@ app.use(cookieParser());
 // Routes
 app.use('/api', api);
 app.use('/auth', auth);
-
+app.use('/database', database);
 app.listen(port, () => {
     console.log(`express is running on ${port}`);
 });
