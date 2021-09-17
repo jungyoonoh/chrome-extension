@@ -80,6 +80,13 @@ function CrudTest(){
     const {data}=await axios.delete('/database/user');
     await axios.get('/auth/logout');
   };
+  
+  const getYoutubeSearchData = async () => {
+    await axios.get('/api/youtube/search')
+      .then(response => {
+        console.log(response);
+      }).catch(err => {console.log(err)});
+  }
 
   return (
     <div id="google-test">
@@ -92,6 +99,10 @@ function CrudTest(){
           <button onClick={userRead}>유저정보 조회</button>
           <button onClick={keywordAdd}>키워드 추가</button>
           <button onClick={keywordDelete}>키워드 삭제</button>
+          <p>로그인한 녀석의 동영상 정보</p>
+          <button className="test" onClick={getYoutubeSearchData}>
+            사용자가 정한 유튜브 키워드에 해당하는 영상 가져오기
+          </button>
           <button>유저 수정</button>
           <a onClick={userDelete} href="/auth/logout">유저 삭제</a>
           </div>
