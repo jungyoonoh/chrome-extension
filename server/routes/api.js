@@ -47,7 +47,6 @@ router.get('/news',(req,res)=>{
     });
 });
 
-
 router.post('/news',(req,res)=>{
   const url=`https://search.naver.com/search.naver?where=news&sm=tab_jum&query=${encodeURI(req.body.keyword)}`;
   const options={
