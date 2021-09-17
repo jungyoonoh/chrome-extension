@@ -264,9 +264,11 @@ router.get('/stock', (req, res) => {
         if(dir === "상승" || dir === "상한") changePrice = "+" + changePrice;
         else if (dir === "하락" || dir === "하한") changePrice = "-" + changePrice;
         let stockJson = {};
+        let title = $(element).find('td:nth-of-type(2)').find('a').text().trim();
+        let price = $(element).find('td:nth-of-type(3)').text().trim();
         stockJson["rank"] = rank;
-        stockJson["title"] = $(element).find('td:nth-of-type(2)').find('a').text().trim();
-        stockJson["price"] = $(element).find('td:nth-of-type(3)').text().trim();
+        stockJson["title"] = title;
+        stockJson["price"] = price;
         stockJson["dir"] = dir;
         stockJson["changePrice"] = changePrice;
         stockJson["changeRate"] = changeRate;
