@@ -64,19 +64,20 @@ function CrudTest(){
   }, [isLogin])
 
   const userRead=async()=>{//현재 유저 정보 조회
-    const {data}=await axios.get(`/database`);
+    const {data}=await axios.get(`/database/user`);
     console.log(data);
   };
-  const keywordAdd=async()=>{//현재 유저의 키워드 추가
+  const keywordAdd=async()=>{
     const {data}=await axios.patch(`/database/${keyword}/add`);
     console.log(data);
   };
-  const keywordDelete=async()=>{//현재 유저의 키워드 삭제
+  
+  const keywordDelete=async()=>{
     const {data}=await axios.patch(`/database/${keyword}/delete`);
     console.log(data);
   };
   const userDelete=async()=>{//현재 유저 탈퇴
-    const {data} = await axios.delete('/database');
+    const {data}=await axios.delete('/database/user');
     await axios.get('/auth/logout');
   };
   
