@@ -21,12 +21,15 @@ const Main = () => {
         window.open("https://accessible-hedgehog-77e.notion.site/Toast-daca621379c844da84071452a7f46734")
     }
     const [userName, setUserName] = useState('')
+    const [isLogin, setIsLogin] = useState(false)
     const Login=()=>{
-        // axios.get('')
-        // .then(response=>{
-        //     console.log(response)
-        // })
-        // .catch(err => {console.log(err)});
+        axios.get('/auth')
+        .then(response=>{
+            console.log(response)
+            if (response.data=="") setIsLogin(false)
+            else setIsLogin(true)
+        })
+        .catch(err => {console.log(err)});
     }
     return (
         <div className="contents">

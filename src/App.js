@@ -1,9 +1,110 @@
 import 'css/App.css';
-import { useEffect, useState, } from 'react';
+import { useState, useEffect } from 'react';
+import React  from 'react';
 import axios from "axios"
 
 let locationArray=[];
 
+
+//비 로그인 (localstorage code)
+let keyword="";
+
+const addLocalKeyword=()=>{//비 로그인시 키워드 저장하는 방법 : local storage 사용
+  let arr=[];
+  if(localStorage.keyword!=undefined){
+      arr=JSON.parse(localStorage.keyword);
+      if(!arr.includes(keyword)){
+        arr.push(keyword);
+        localStorage.setItem('keyword',JSON.stringify(arr));
+      }
+  }else {
+      arr.push(keyword);
+      localStorage.setItem('keyword',JSON.stringify(arr));
+  }  
+
+  console.log(localStorage.keyword)
+  //전체 삭제시 localStorage.removeItem('keyword');
+};
+const removeKeyword=()=>{// 비로그인 시 지우는 방법
+  let arr=[];
+  const idx=1;
+  arr=JSON.parse(localStorage.keyword);
+ 
+  if(arr.length==1){
+    if(arr[0]===keyword)
+    localStorage.removeItem('keyword');
+  }
+  else {
+    arr=arr.filter( (word) => word!==keyword);
+    localStorage.setItem('keyword',JSON.stringify(arr));
+      /*arr.splice(idx,idx);
+      localStorage.setItem('keyword',JSON.stringify(arr));
+      */
+  }
+  console.log(localStorage.keyword)
+};
+
+//로그인 시 Crud test
+function CrudTest(){
+  const [isLogin, setIsLogin] = useState(false);
+
+  const getLoginInfo = async () => {//로그인 여부 체크
+    await axios.get(
+      '/auth'
+      ).then(response => {
+        console.log(response);
+        if (response.data == "") setIsLogin(false);
+        else setIsLogin(true);
+      }).catch(err => {
+        console.log(err);
+      })
+  }
+  useEffect(() => {
+      getLoginInfo()
+  }, [isLogin])
+
+  const userRead=async()=>{//현재 유저 정보 조회
+    const {data}=await axios.get(`/database`);
+    console.log(data);
+  };
+  const keywordAdd=async()=>{//현재 유저의 키워드 추가
+    const {data}=await axios.patch(`/database/${keyword}/add`);
+    console.log(data);
+  };
+  const keywordDelete=async()=>{//현재 유저의 키워드 삭제
+    const {data}=await axios.patch(`/database/${keyword}/delete`);
+    console.log(data);
+  };
+  const userDelete=async()=>{//현재 유저 탈퇴
+    const {data}=await axios.delete('/database');
+    await axios.get('/auth/logout');
+  };
+
+  return (
+    <div id="google-test">
+        <input className="input" name="news" onChange={e => {keyword=e.target.value}}/>
+      {
+        isLogin ?       
+          (
+          <div>
+          <a href="/auth/logout">로그아웃</a> 
+          <button onClick={userRead}>유저정보 조회</button>
+          <button onClick={keywordAdd}>키워드 추가</button>
+          <button onClick={keywordDelete}>키워드 삭제</button>
+          <button>유저 수정</button>
+          <a onClick={userDelete} href="/auth/logout">유저 삭제</a>
+          </div>
+          ): 
+          <div>
+          <a href="/auth/google">구글 아이디로 로그인</a>
+          <button onClick={addLocalKeyword}>키워드 추가</button>
+          <button onClick={removeKeyword}>키워드 삭제</button>
+          </div>
+      }
+
+    </div>
+  )
+}
 function News(){
   const [newsKeyword,setNewsKeyword]=useState(``);
 
@@ -165,7 +266,6 @@ const Coin = () => {
 }
 
 const Indices = () => {
-  
   const getIndices = async () => {
     await axios.get(
       '/api/indices'
@@ -186,21 +286,37 @@ const Indices = () => {
   )
 }
 
-const App = () => {
+function Google() {
+  const [isLogin, setIsLogin] = useState(false);
 
-  const [testValue, setTestValue] = useState(null); 
-
-  const testApi = async () => {
-    await axios.get('/api/news')
-      .then(response => {
+  const getLoginInfo = async () => {
+    await axios.get(
+      '/auth'
+      ).then(response => {
         console.log(response);
-      }).catch(err => {console.log(err)});
+        if (response.data == "") setIsLogin(false);
+        else setIsLogin(true);
+      }).catch(err => {
+        console.log(err);
+      })
   }
-  
-  useEffect(() => {
-    testApi();
-  }, [testValue]);
 
+  useEffect(() => {
+      getLoginInfo()
+  }, [isLogin])
+
+  return (
+    <div id="google-test">
+      {
+        isLogin ?       
+          <a href="/auth/logout">로그아웃</a> : 
+          <a href="/auth/google">구글 아이디로 로그인</a>
+      }
+    </div>
+  )
+}
+
+const App = () => {
 
   return (
     <div className="App">
@@ -210,6 +326,8 @@ const App = () => {
       <News/>
       <Weather/>
       <Indices/>
+      <CrudTest/>
+     {/* <Google/>*/}
     </div>
   );
 }

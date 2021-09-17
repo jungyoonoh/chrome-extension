@@ -1,4 +1,4 @@
-const Sequelize=require('sequelize');
+const Sequelize = require('sequelize');
 
 module.exports=class Session extends Sequelize.Model{
     static init (sequelize){
