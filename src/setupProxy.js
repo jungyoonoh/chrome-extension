@@ -9,6 +9,10 @@ module.exports = function(app) {
         createProxyMiddleware ('/auth', {
             target: 'http://localhost:3001/',
             changeOrigin: true
+        }),
+        createProxyMiddleware ('/database', {
+            target: 'http://localhost:3001/',
+            changeOrigin: true
         })
     );
 }
