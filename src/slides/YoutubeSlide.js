@@ -2,7 +2,6 @@ import { useEffect, useState,forwardRef, useImperativeHandle} from 'react';
 import axios from "axios"
 
 import 'css/YoutubeSlide.css';
-import YoutubeCardL from '../components/YoutubeCardL'
 import CardM from 'components/CardM';
 
 function YoutubeSlide(){

@@ -1,5 +1,5 @@
 import 'css/Main.css';
-import { useCallback, useRef, useState} from 'react';
+import { useRef, useState} from 'react';
 import axios from "axios"
 import Slider from "react-slick";
 // import Slide from "./Slide"
@@ -22,14 +22,10 @@ const Main = () => {
     }
     const [userName, setUserName] = useState('')
     const [isLogin, setIsLogin] = useState(false)
-    const Login=()=>{
-        axios.get('/auth')
-        .then(response=>{
-            console.log(response)
-            if (response.data=="") setIsLogin(false)
-            else setIsLogin(true)
-        })
-        .catch(err => {console.log(err)});
+    const Login=async()=>{
+        window.location.href="http://localhost:3001/auth/google"
+        // const {data}=await axios.get(`/database`);
+        // setUserName(data.displayName)
     }
     return (
         <div className="contents">
@@ -38,6 +34,7 @@ const Main = () => {
                 <div className="header-icons">
                     <button className="header-button">
                         <BsFillPersonFill className="header-icon" onClick={Login}/>
+                        
                     </button>
                     <button className="header-button">
                         <AiFillHome className="header-icon" onClick={onClickHome}/>
