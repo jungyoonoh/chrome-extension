@@ -24,9 +24,15 @@ const UserSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
-    keyword:{
-        type:Array
+    youtubeKeyword : {
+        type:Array,
+    },
+    newsKeyword:{
+        type:Array,
+    },
+    stockKeyword : {
+        type:Array,
     }
-})
+});
 
 module.exports = mongoose.model('User', UserSchema);
