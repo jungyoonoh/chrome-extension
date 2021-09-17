@@ -1,6 +1,6 @@
 import 'css/Main.css';
-import { useCallback, useRef } from 'react';
-// import axios from "axios"
+import { useCallback, useRef, useState} from 'react';
+import axios from "axios"
 import Slider from "react-slick";
 // import Slide from "./Slide"
 import MainSlide from 'slides/MainSlide';
@@ -9,6 +9,7 @@ import StockSlide from 'slides/StockSlide';
 import { AiFillHome } from 'react-icons/ai'
 import { BsFillPersonFill, BsFillChatDotsFill } from 'react-icons/bs'
 import {FaInfoCircle, } from 'react-icons/fa'
+import YoutubeSlide from 'slides/YoutubeSlide';
 // https://react-icons.github.io/react-icons
 
 const Main = () => {
@@ -19,12 +20,21 @@ const Main = () => {
     const onClickInfo =()=>{
         window.open("https://accessible-hedgehog-77e.notion.site/Toast-daca621379c844da84071452a7f46734")
     }
+    const [userName, setUserName] = useState('')
+    const Login=()=>{
+        // axios.get('')
+        // .then(response=>{
+        //     console.log(response)
+        // })
+        // .catch(err => {console.log(err)});
+    }
     return (
         <div className="contents">
             <header>
+                {userName!=''&& <p>{userName}님 안녕하세요!</p>}
                 <div className="header-icons">
                     <button className="header-button">
-                        <BsFillPersonFill className="header-icon" />
+                        <BsFillPersonFill className="header-icon" onClick={Login}/>
                     </button>
                     <button className="header-button">
                         <AiFillHome className="header-icon" onClick={onClickHome}/>
@@ -42,7 +52,8 @@ const Main = () => {
                     ref={slideRef}
                 >
                     <MainSlide></MainSlide>
-                    <StockSlide></StockSlide>
+                    {/* <StockSlide></StockSlide> */}
+                    <YoutubeSlide></YoutubeSlide>
 
                 </Slider>
             </div>
