@@ -1,8 +1,12 @@
 const express  = require('express');
 const router   = express.Router();
+const User = require('../models/User');
 
 
-const User=require('../models/User');
+
+router.patch('/:keyword/:type/add', async(req, res, next)=>{ // 키워드 추가
+    next('route');
+})
 
 //db관련함수는 async/await로
 router.route('/')
@@ -45,6 +49,7 @@ router.patch('/:keyword/delete',async(req,res,next)=>{//키워드 삭제
     }
 
 })
+
 router.patch('/:keyword/add',async(req,res,next)=>{//키워드 추가
     try{
         const result=await User.updateOne({_id:req.session.passport.user}, {$addToSet: {keyword: req.params.keyword }} );
@@ -53,7 +58,6 @@ router.patch('/:keyword/add',async(req,res,next)=>{//키워드 추가
         console.error(err);
         next(err);
     }
-
 })
 
 /*

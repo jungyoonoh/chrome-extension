@@ -6,6 +6,7 @@ const cheerio = require('cheerio');
 const iconv1 = require('iconv').Iconv;
 const fs = require('fs');
 const path = require('path');
+const User = require('../models/User');
 require('dotenv').config({path: path.join(__dirname, "../credentials/.env")}); //dir수정
 
 // ------------------------------------------------------------------
@@ -232,6 +233,71 @@ router.post('/youtube', (req, res) => {
   });
 })
 
+router.get('/youtube/search', async (req, res) => {
+  // 유튜브 정보 가져오기 영문 검색시
+
+  let user = null;
+  try{
+    user = await User.findOne({_id:req.session.passport.user});
+    console.log("DB OK ", user);
+    res.json(result); //matchcount 가 1이고 modified count 0 이면 중복
+  }catch(err){
+    console.error(err);
+    res.status(504).send("ERROR");
+  }
+
+  if (user.youtubeKeyword.length == 0){
+    res.status(200).send("NO DATA");
+  }
+
+  // 검색 필터 기준값
+  // order, relevance.. 등
+  var filter = "relevance";
+  const videoInfoList = [];
+  for(var i = 0; i < user.youtubeKeyword.length; i++){
+    keyword = user.youtubeKeyword[i];
+    var displayNum = Math.round(displayNum = 12 / youtubeKeyword.length);
+    var optionParams = {
+        q:'keyword',
+        part:"snippet",
+        type:"video",
+        order:filter,
+        key:process.env.GCP_API_KEY,
+        maxResults:displayNum
+    };
+
+    // 한글 검색어 사용시 인코딩 과정 필요
+    optionParams.q = encodeURI(optionParams.q);
+
+    var url = "https://www.googleapis.com/youtube/v3/search?";
+  
+    for(var option in optionParams){
+      url += option + "=" + optionParams[option]+"&";
+    }
+  
+    url = url.substr(0, url.length - 1);
+
+    var videoBaseUrl = "https://www.youtube.com/watch?v=";
+
+    request.get(url, (err, response, body) => {
+      result = JSON.parse(body);
+      for(var i = 0; i < displayNum; i++){
+        const videoInfo = {};
+        // 썸네일 사이즈 (defauit : 120x90 / medium : 320x180 / high : 480x360)
+        videoInfo["title"] = result["items"][i]["snippet"]["title"];
+        videoInfo["description"] = result["items"][i]["snippet"]["description"];
+        videoInfo["channelTitle"] = result["items"][i]["snippet"]["channelTitle"];
+        videoInfo["thumbnails"] = result["items"][i]["snippet"]["thumbnails"]["high"]["url"]; 
+        videoInfo["videoUrl"] = videoBaseUrl + result["items"][i]["id"]["videoId"];
+        videoInfoList.push(videoInfo);
+      }
+    });
+  }
+  res.send(videoInfoList);
+})
+
+
+
 let stockDirection = {}
 
 fs.readFile('../server/data/stockDirection.json', 'utf8', (err, jsonFile) => {
@@ -330,6 +396,14 @@ router.post('/stock', (req, res) => {
       res.send(stockInfo)
     })
   }  
+})
+
+router.get('/stockKeyword', (req, res) => {
+  // 1번
+})
+
+router.get('/youtubeKeyword', (req, res) => {
+  // 2번
 })
 
 router.get('/indices', (req, res) => {

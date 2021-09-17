@@ -24,7 +24,10 @@ const UserSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
-    keyword:{
+    youtubeKeyword:{
+        type:Array
+    },
+    stockKeyword:{
         type:Array
     }
 })
