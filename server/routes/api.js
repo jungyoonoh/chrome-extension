@@ -14,83 +14,78 @@ require('dotenv').config({path: path.join(__dirname, "../credentials/.env")}); /
 
 // 네이버 뉴스 api를 이용해 뉴스 정보 가져옴
 const request = require('request');
+const axios = require('axios');
 
-router.get('/news',(req,res)=>{
-  const url=`https://news.naver.com/main/home.naver`;
+router.get('/news',async(req,res)=>{//핫토픽 뉴스를 크롤링을 이용해 가져옴 -> 수정해야함
+  const url=`https://news.naver.com/`;
   const options={
     url: url,
     method: "GET",
     encoding:null,
   };
-  request(options,(error,response,body)=>{
-    if (error) {
-          console.error(error);
-          return;
-      }
-      if(response.statusCode == 200){
-        iconv = new iconv1('euc-kr', 'utf-8');
-        let htmlDoc = iconv.convert(body).toString();
-        const $=cheerio.load(htmlDoc);//encoding
-        const newsResult=[];
-        const list_arr=$("#_rankingList0 > li");
-        list_arr.map((idx,li)=>{
-          newsResult[idx]={
-            url: `https://news.naver.com/${$(li).find("a").attr('href')}`,
-            thumb: $(li).find("a>img").attr('src'),
-            title:$(li).find(".list_tit").text().trim(),
-            comp:$(li).find(".list_press").text().trim(),
-          }
-        })
-        res.status(200);
-        res.send(newsResult);
-      }
-    });
+  axios(options).then((response)=>{
+    if(response.status == 200){
+      console.log(response.data);
+      let iconv = new iconv1('euc-kr', 'utf-8');
+      let htmlDoc = iconv.convert(response.data).toString();
+      const $=cheerio.load(htmlDoc);//encoding
+      const newsResult=[];
+      const list_arr=$(".brick-vowel _brick_column");
+      list_arr.map((idx,li)=>{
+        newsResult[idx]={
+          url: `https://news.naver.com/${$(li).find("a").attr('href')}`,
+          thumb: $(li).find("a>img").attr('src'),
+          title:$(li).find(".list_tit").text().trim(),
+          comp:$(li).find(".list_press").text().trim(),
+        }
+      })
+      res.status(200);
+      res.send(newsResult);
+    }
+  }).catch((error)=>{
+    console.error(error);
+  });
 });
 
-router.post('/news',(req,res)=>{
+
+router.post('/news',(req,res)=>{//키워드 기반으로 크롤링하여 뉴스 가져옴
   const url=`https://search.naver.com/search.naver?where=news&sm=tab_jum&query=${encodeURI(req.body.keyword)}`;
   const options={
     url: url,
-    method: "GET"
+    method: 'get'
   };
-  request(options,(error,response,body)=>{
-    if (error) {
-          console.error(error);
-          return;
-      }
-      if(response.statusCode == 200){
-        const $=cheerio.load(body);
-        const newsResult=[];
-        const list_arr=$(".list_news>li>.news_wrap");
-        list_arr.map((idx,div)=>{
-          newsResult[idx]={
-            title: $(div).find(".news_tit").attr("title"),
-            url:$(div).find(".news_tit").attr("href"),
-            description:$(div).find(".news_dsc").text().trim(),
-            thumb:$(div).find(".dsc_thumb>img").attr("src"),
-            comp:$(div).find("a.info.press").text().replace("언론사 선정",''),
-          }
-        })
-        res.send(newsResult);
-      }
-    });
-
+  axios(options).then((response)=>{
+    if(response.status == 200){
+      const $=cheerio.load(response.data);
+      const newsResult=[];
+      const list_arr=$(".list_news>li>.news_wrap");
+      list_arr.map((idx,div)=>{
+        newsResult[idx]={
+          title: $(div).find(".news_tit").attr("title"),
+          url:$(div).find(".news_tit").attr("href"),
+          description:$(div).find(".news_dsc").text().trim(),
+          thumb:$(div).find(".dsc_thumb>img").attr("src"),
+          comp:$(div).find("a.info.press").text().replace("언론사 선정",''),
+        }
+      })
+      res.send(newsResult);
+    }
+  }).catch((error)=>{
+    console.error(error);
+  });
 });
 
-router.post('/location',(req,res)=>{
+router.post('/location',(req,res)=>{//키워드 기반으로 위치정보를 가져옴 (특정 위치의 날씨정보 가져올 때 사용)
   const locationUrl=`https://dapi.kakao.com/v2/local/search/address.json?query=${encodeURI(req.body.keyword)}`;
   const options={
     url:locationUrl,
-    type:'GET',
+    type:'get',
+    method:'get',
     headers: {'Authorization' : `KakaoAK ${process.env.KAKAO_LOCATION_API_KEY}`}
-  }
-  request.get(options,(error,response,body)=>{
-    if(error){
-      console.log(error);
-      return;
-    }
-    if(response.statusCode == 200){
-      const {documents}=JSON.parse(body);
+  };
+  axios(options).then((response)=>{
+    if(response.status == 200){
+      const {documents}=response.data;
       const addrArray=[];
       documents.map((addr,idx)=>{
         addrArray[idx]={
@@ -101,16 +96,16 @@ router.post('/location',(req,res)=>{
       })
       res.send(addrArray);
     }
-  })
-
+  }).catch((error)=>{
+    console.log(error);
+  });
 });
-router.get(`/weather`,(req,res)=>{
+
+router.get(`/weather`,(req,res)=>{// default 위치인 서울 중구의 날씨 가져옴
   const url=`https://api.openweathermap.org/data/2.5/weather?lat=37.5555892070291&lon=126.981204133005&appid=${process.env.WEATHER_API_KEY}`;
-  request.get(url,(error,response,body)=>{
-    if(error){
-      console.log(error);
-    }else if(response.statusCode==200){
-      const result= JSON.parse(body);
+  axios.get(url).then((response)=>{
+    if(response.status==200){
+      const result= response.data;
       const weatherResult={
         main : result.main,
         icon : `http://openweathermap.org/img/wn/${result.weather[0].icon}@2x.png`,
@@ -119,16 +114,28 @@ router.get(`/weather`,(req,res)=>{
       res.status(200).set('charset=utf-8');  
       res.send(weatherResult); //string 값으로 받아옴
     }
+  }).catch((error)=>{
+    console.log(error);
   });
 });
-router.post(`/weather`,(req,res)=>{
+
+router.post(`/weather`,(req,res)=>{//특정 위치의 날씨 가져옴
   const{location}=req.body;
-  const url=`https://api.openweathermap.org/data/2.5/weather?lat=${location.lat}&lon=${location.lon}&appid=${process.env.WEATHER_API_KEY}`;
-  request.get(url,(error,response,body)=>{
-    if(error){
-      console.log(error);
-    }else if(response.statusCode==200){
-      const result= JSON.parse(body);
+ // const url=`https://api.openweathermap.org/data/2.5/weather?lat=${location.lat}&lon=${location.lon}&appid=${process.env.WEATHER_API_KEY}`;
+  const url=`https://api.openweathermap.org/data/2.5/weather`;
+  const params={
+    lat:location.lat,
+    lon:location.lon,
+    appid:process.env.WEATHER_API_KEY,
+  };
+  const options={
+    url:url,
+    method:'get',
+    params:params,
+  };
+  axios(options).then((response)=>{
+    if(response.status==200){
+      const result= response.data;
       const weatherResult={
         main : result.main,
         icon : `http://openweathermap.org/img/wn/${result.weather[0].icon}@2x.png`,
@@ -137,9 +144,10 @@ router.post(`/weather`,(req,res)=>{
       res.status(200).set('charset=utf-8');  
       res.send(weatherResult); //string 값으로 받아옴
     }
-  });
+  }).catch((error)=>{
+    console.log(error);
+  })
 });
-
 // ------------------------------------------------------------------
 // YOUTUBE DATA API v3. Search
 // 파라미터 가이드 : https://developers.google.com/youtube/v3/docs/search
