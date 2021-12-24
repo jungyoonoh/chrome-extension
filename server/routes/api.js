@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 const cheerio = require('cheerio');
 const iconv1 = require('iconv').Iconv;
+const iconv_lite = require('iconv-lite');
 const fs = require('fs');
 const path = require('path');
 const User = require('../models/User');
@@ -24,6 +25,7 @@ router.get('/news',(req,res)=>{
     method: "GET",
     encoding:null,
   };
+
   request(options,(error,response,body)=>{
     if (error) {
           console.error(error);
@@ -165,15 +167,16 @@ router.get('/youtube', (req, res) => {
     apiUrl += option + "=" + optionParams[option]+"&";
   }
   
-  apiUrl = apiUrl.substr(0, apiUrl.length - 1);
+  apiUrl = apiUrl.substring(0, apiUrl.length - 1);
 
   var videoBaseUrl = "https://www.youtube.com/watch?v=";
 
   axios({
-    method: 'get',
-    url: apiUrl
-  }).then((res) => {
-    result = JSON.parse(body);
+    url: apiUrl,
+    method: 'GET'
+  }).then((response) => {
+    result = response.data;
+    // result = JSON.parse(res.data);
     const videoInfoList = [];
     for(var i = 0; i < displayNum; i++){
       const videoInfo = {};
@@ -188,8 +191,9 @@ router.get('/youtube', (req, res) => {
     res.send(videoInfoList);
   })
 
-  // request.get(url, (err, response, body) => {
+  // request.get(apiUrl, (err, response, body) => {
   //   result = JSON.parse(body);
+  //   console.log(body);
   //   const videoInfoList = [];
   //   for(var i = 0; i < displayNum; i++){
   //     const videoInfo = {};
@@ -238,10 +242,11 @@ router.post('/youtube', (req, res) => {
   var videoBaseUrl = "https://www.youtube.com/watch?v=";
   
   axios({
-    method: 'get',
-    url: apiUrl
-  }).then((res) => {
-    result = JSON.parse(body);
+    url: apiUrl,
+    method: 'GET',
+  }).then((response) => {
+    result = response.data;
+    // result = JSON.parse(body);
     const videoInfoList = [];
     for(var i = 0; i < displayNum; i++){
       const videoInfo = {};
@@ -317,8 +322,8 @@ router.get('/youtube/search', async (req, res) => {
     var videoBaseUrl = "https://www.youtube.com/watch?v=";
 
     axios({
-      method: 'get',
-      url: apiUrl
+      url: apiUrl,
+      method: 'GET'
     }).then((body) => {
       result = JSON.parse(body);
       for(var i = 0; i < displayNum; i++){
@@ -349,6 +354,9 @@ router.get('/youtube/search', async (req, res) => {
   res.send(videoInfoList);
 })
 
+// ------------------------------------------------------------------
+// STOCK DATA FROM NAVER FINANCE
+// ------------------------------------------------------------------
 
 // load StockDirection (상한, 하한)
 let stockDirection = {}
@@ -363,15 +371,15 @@ const startTr = 3; // 종목 시작 카운트
 const topTradingStockNum = 5; // 거래량 상위 n개 종목
 router.get('/stock', (req, res) => {
 
-  const url = "https://finance.naver.com/sise/sise_quant.nhn";
+  const apiUrl = "https://finance.naver.com/sise/sise_quant.nhn";
 
   axios({
-    method: 'get',
-    url: apiUrl
-  }).then((body) => {
-    let iconv = new iconv1('euc-kr', 'utf-8');
-    let htmlDoc = iconv.convert(body).toString();
-    const $ = cheerio.load(htmlDoc);
+    url: apiUrl,
+    method: 'GET',
+    responseType: "arraybuffer"
+  }).then((response) => {
+    const convert = iconv_lite.decode(response.data, 'EUC-KR');
+    const $ = cheerio.load(convert);    
     const topTradingStockList = [];
 
     for(var j = startTr; j < startTr + topTradingStockNum; j++){
@@ -445,20 +453,20 @@ fs.readFile('../server/data/stockCodeUrl_pc.json', 'utf8', (err, jsonFile) => {
 // 종목 가격
 router.post('/stock', (req, res) => {
   const title = req.body.keyword;
-  const url = stockCodeUrl[title];
+  const apiUrl = stockCodeUrl[title];
   const stockInfo = {};
-  if(url === undefined) {
+  if(apiUrl === undefined) {
     stockInfo['err'] = 'Noname';
     res.send(stockInfo)
   }
   else{
     axios({
-      method: 'get',
-      url: apiUrl
-    }).then((body) => {
-      let iconv = new iconv1('euc-kr', 'utf-8');
-      let htmlDoc = iconv.convert(body).toString();
-      const $ = cheerio.load(htmlDoc);
+      url: apiUrl,
+      method: "GET",
+      responseType: "arraybuffer"
+    }).then((response) => {
+      const convert = iconv_lite.decode(response.data, 'EUC-KR');
+      const $ = cheerio.load(convert);
       let priceFragments = "", changePriceFragments = "", changeRateFragments = "", priceOfYesterday = "", topPrice = "", tradingVolume = "",
         upperLimit = "";
       $('#chart_area > .rate_info > .today > .no_today > em').map((i, element) => {
@@ -490,10 +498,6 @@ router.post('/stock', (req, res) => {
             break
         }
       })
-      console.log(priceOfYesterday);
-      console.log(topPrice);
-      console.log(upperLimit);
-      console.log(tradingVolume);
       let price = priceFragments.substring(0, priceFragments.length / 2);
       let dir = changePriceFragments.substring(0, 2);
       let changePrice = ""
@@ -510,10 +514,9 @@ router.post('/stock', (req, res) => {
       stockInfo["topPrice"] = topPrice; // 금일 고가 
       stockInfo["upperLimit"] = upperLimit; // 상한가  
       stockInfo["tradingVolume"] = tradingVolume; // 거래량
-
-      stockInfo["url"] = url;
+      stockInfo["url"] = apiUrl;
       res.status(200);
-      res.send(stockInfo)
+      res.send(stockInfo);
     })
     // request({url, encoding:null}, (err, response, body) => {
     //   let iconv = new iconv1('euc-kr', 'utf-8');
@@ -583,15 +586,15 @@ router.get('/stock/:keyword', (req, res) => {
 })
 
 router.get('/indices', (req, res) => {
-  let url = "https://finance.naver.com/";
+  let apiUrl = "https://finance.naver.com/";
   const indicesInfo = [];
   axios({
-    method: 'get',
-    url: apiUrl
-  }).then((body) => {
-    let iconv = new iconv1('euc-kr', 'utf-8');
-    let htmlDoc = iconv.convert(body).toString();
-    const $ = cheerio.load(htmlDoc);
+    url: apiUrl,
+    method: "GET",
+    responseType: "arraybuffer"
+  }).then((response) => {
+    const convert = iconv_lite.decode(response.data, 'EUC-KR');
+    const $ = cheerio.load(convert);
 
     // KOSPI
     let kospiInfo = {};
@@ -625,9 +628,10 @@ router.get('/indices', (req, res) => {
 
     res.send(indicesInfo);
   })
-  // request({url, encoding:null}, (err, response, body) => {
+  // request({apiUrl, encoding:null}, (err, response, body) => {
+  //   console.log(body);
   //   let iconv = new iconv1('euc-kr', 'utf-8');
-  //   let htmlDoc = iconv.convert(body).toString();
+  //   let htmlDoc = iconv.convert(body).toString();    
   //   const $ = cheerio.load(htmlDoc);
 
   //   // KOSPI

@@ -4,12 +4,7 @@ require('dotenv').config({path: path.join(__dirname, "../credentials/.env")}); /
 
 const connectDB = async () => {
     try {
-        const conn = await mongoose.connect(process.env.MONGO_URI, {
-            dbName:'toast',
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-            // useFindAndModify: false -> mongoose 6.0 이상에서는 항상 false라서 더이상 지원하지 않는다 함
-        })
+        const conn = await mongoose.connect(process.env.MONGO_URI)
         console.log(`mongoDB Connect: ${conn.connection.host}`)
     } catch (err) {
         console.error(err)
