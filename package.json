@@ -37,7 +37,7 @@
     "web-vitals": "^1.1.2"
   },
   "scripts": {
-    "client": "react-scripts start",
+    "client": "set PORT=8000 && react-scripts start",
     "server": "cd server && nodemon server.js",
     "start": "concurrently \"npm run server\" \"npm run client\"",
     "build": "react-scripts build",
@@ -61,6 +61,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ],
-    "proxy": "http://localhost:3001/"
+    "proxy": "http://localhost:8001/"
   }
 }

@@ -21,7 +21,7 @@ const auth = require('./routes/auth');
 const database = require('./routes/database');
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 8001;
 
 // const {sequelize} = require('./database/models');
 
