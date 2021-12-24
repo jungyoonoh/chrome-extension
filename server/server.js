@@ -50,6 +50,7 @@ app.use(cookieParser());
 app.use('/api', api);
 app.use('/auth', auth);
 app.use('/database', database);
+
 app.listen(port, () => {
     console.log(`express is running on ${port}`);
 });

@@ -15,6 +15,7 @@ require('dotenv').config({path: path.join(__dirname, "../credentials/.env")}); /
 
 // 네이버 뉴스 api를 이용해 뉴스 정보 가져옴
 const request = require('request');
+const { default: axios } = require('axios');
 
 router.get('/news',(req,res)=>{
   const url=`https://news.naver.com/main/home.naver`;
@@ -103,8 +104,8 @@ router.post('/location',(req,res)=>{
       res.send(addrArray);
     }
   })
-
 });
+
 router.get(`/weather`,(req,res)=>{
   const url=`https://api.openweathermap.org/data/2.5/weather?lat=37.5555892070291&lon=126.981204133005&appid=${process.env.WEATHER_API_KEY}`;
   request.get(url,(error,response,body)=>{
@@ -122,6 +123,7 @@ router.get(`/weather`,(req,res)=>{
     }
   });
 });
+
 router.post(`/weather`,(req,res)=>{
   const{location}=req.body;
   const url=`https://api.openweathermap.org/data/2.5/weather?lat=${location.lat}&lon=${location.lon}&appid=${process.env.WEATHER_API_KEY}`;
@@ -147,8 +149,9 @@ router.post(`/weather`,(req,res)=>{
 // ------------------------------------------------------------------
 
 router.get('/youtube', (req, res) => {
-  // https://www.googleapis.com/youtube/v3/videos?chart=mostPopular&key={YOUR_API_KEY}&part=snippet&maxResults=4
-  var url = "https://www.googleapis.com/youtube/v3/videos?";
+  const axios = require('axios');
+
+  var apiUrl = "https://www.googleapis.com/youtube/v3/videos?";
   var displayNum = 5;
   var optionParams = {
     part:"snippet",
@@ -159,14 +162,17 @@ router.get('/youtube', (req, res) => {
   };
 
   for(var option in optionParams){
-    url += option + "=" + optionParams[option]+"&";
+    apiUrl += option + "=" + optionParams[option]+"&";
   }
   
-  url = url.substr(0, url.length - 1);
+  apiUrl = apiUrl.substr(0, apiUrl.length - 1);
 
   var videoBaseUrl = "https://www.youtube.com/watch?v=";
 
-  request.get(url, (err, response, body) => {
+  axios({
+    method: 'get',
+    url: apiUrl
+  }).then((res) => {
     result = JSON.parse(body);
     const videoInfoList = [];
     for(var i = 0; i < displayNum; i++){
@@ -180,7 +186,23 @@ router.get('/youtube', (req, res) => {
       videoInfoList.push(videoInfo);
     }
     res.send(videoInfoList);
-  });
+  })
+
+  // request.get(url, (err, response, body) => {
+  //   result = JSON.parse(body);
+  //   const videoInfoList = [];
+  //   for(var i = 0; i < displayNum; i++){
+  //     const videoInfo = {};
+  //     // 썸네일 사이즈 (defauit : 120x90 / medium : 320x180 / high : 480x360)
+  //     videoInfo["title"] = result["items"][i]["snippet"]["title"];
+  //     // videoInfo["description"] = result["items"][i]["snippet"]["description"];
+  //     videoInfo["channelTitle"] = result["items"][i]["snippet"]["channelTitle"];
+  //     videoInfo["thumbnails"] = result["items"][i]["snippet"]["thumbnails"]["high"]["url"]; 
+  //     videoInfo["videoUrl"] = videoBaseUrl + result["items"][i]["id"];
+  //     videoInfoList.push(videoInfo);
+  //   }
+  //   res.send(videoInfoList);
+  // });
 })
 
 router.post('/youtube', (req, res) => {
@@ -205,17 +227,20 @@ router.post('/youtube', (req, res) => {
   // 한글 검색어 사용시 인코딩 과정 필요
   optionParams.q = encodeURI(optionParams.q);
 
-  var url = "https://www.googleapis.com/youtube/v3/search?";
+  var apiUrl = "https://www.googleapis.com/youtube/v3/search?";
   
   for(var option in optionParams){
-    url += option + "=" + optionParams[option]+"&";
+    apiUrl += option + "=" + optionParams[option]+"&";
   }
   
-  url = url.substr(0, url.length - 1);
+  apiUrl = apiUrl.substring(0, apiUrl.length - 1);
 
   var videoBaseUrl = "https://www.youtube.com/watch?v=";
   
-  request.get(url, (err, response, body) => {
+  axios({
+    method: 'get',
+    url: apiUrl
+  }).then((res) => {
     result = JSON.parse(body);
     const videoInfoList = [];
     for(var i = 0; i < displayNum; i++){
@@ -229,17 +254,30 @@ router.post('/youtube', (req, res) => {
       videoInfoList.push(videoInfo);
     }
     res.send(videoInfoList);
-  });
+  })
+  // request.get(url, (err, response, body) => {
+  //   result = JSON.parse(body);
+  //   const videoInfoList = [];
+  //   for(var i = 0; i < displayNum; i++){
+  //     const videoInfo = {};
+  //     // 썸네일 사이즈 (defauit : 120x90 / medium : 320x180 / high : 480x360)
+  //     videoInfo["title"] = result["items"][i]["snippet"]["title"];
+  //     videoInfo["description"] = result["items"][i]["snippet"]["description"];
+  //     videoInfo["channelTitle"] = result["items"][i]["snippet"]["channelTitle"];
+  //     videoInfo["thumbnails"] = result["items"][i]["snippet"]["thumbnails"]["high"]["url"]; 
+  //     videoInfo["videoUrl"] = videoBaseUrl + result["items"][i]["id"]["videoId"];
+  //     videoInfoList.push(videoInfo);
+  //   }
+  //   res.send(videoInfoList);
+  // });
 })
 
 router.get('/youtube/search', async (req, res) => {
-  // 유튜브 정보 가져오기 영문 검색시
-
   let user = null;
   try{
     user = await User.findOne({_id:req.session.passport.user});
-    console.log("DB OK ", user);
-    res.json(result); //matchcount 가 1이고 modified count 0 이면 중복
+    console.log(user + "'s keyword Search is Successed");
+    res.json(result); // matchcount 가 1이고 modified count 0 이면 중복
   }catch(err){
     console.error(err);
     res.status(504).send("ERROR");
@@ -268,17 +306,20 @@ router.get('/youtube/search', async (req, res) => {
     // 한글 검색어 사용시 인코딩 과정 필요
     optionParams.q = encodeURI(optionParams.q);
 
-    var url = "https://www.googleapis.com/youtube/v3/search?";
+    var apiUrl = "https://www.googleapis.com/youtube/v3/search?";
   
     for(var option in optionParams){
-      url += option + "=" + optionParams[option]+"&";
+      apiUrl += option + "=" + optionParams[option]+"&";
     }
   
-    url = url.substr(0, url.length - 1);
+    apiUrl = apiUrl.substring(0, apiUrl.length - 1);
 
     var videoBaseUrl = "https://www.youtube.com/watch?v=";
 
-    request.get(url, (err, response, body) => {
+    axios({
+      method: 'get',
+      url: apiUrl
+    }).then((body) => {
       result = JSON.parse(body);
       for(var i = 0; i < displayNum; i++){
         const videoInfo = {};
@@ -290,15 +331,27 @@ router.get('/youtube/search', async (req, res) => {
         videoInfo["videoUrl"] = videoBaseUrl + result["items"][i]["id"]["videoId"];
         videoInfoList.push(videoInfo);
       }
-    });
+    })
+    // request.get(url, (err, response, body) => {
+    //   result = JSON.parse(body);
+    //   for(var i = 0; i < displayNum; i++){
+    //     const videoInfo = {};
+    //     // 썸네일 사이즈 (defauit : 120x90 / medium : 320x180 / high : 480x360)
+    //     videoInfo["title"] = result["items"][i]["snippet"]["title"];
+    //     videoInfo["description"] = result["items"][i]["snippet"]["description"];
+    //     videoInfo["channelTitle"] = result["items"][i]["snippet"]["channelTitle"];
+    //     videoInfo["thumbnails"] = result["items"][i]["snippet"]["thumbnails"]["high"]["url"]; 
+    //     videoInfo["videoUrl"] = videoBaseUrl + result["items"][i]["id"]["videoId"];
+    //     videoInfoList.push(videoInfo);
+    //   }
+    // });
   }
   res.send(videoInfoList);
 })
 
 
-
+// load StockDirection (상한, 하한)
 let stockDirection = {}
-
 fs.readFile('../server/data/stockDirection.json', 'utf8', (err, jsonFile) => {
   if(err) return console.log(err);
   stockDirection = JSON.parse(jsonFile);    
@@ -312,7 +365,10 @@ router.get('/stock', (req, res) => {
 
   const url = "https://finance.naver.com/sise/sise_quant.nhn";
 
-  request({url, encoding:null}, (err, response, body) => {
+  axios({
+    method: 'get',
+    url: apiUrl
+  }).then((body) => {
     let iconv = new iconv1('euc-kr', 'utf-8');
     let htmlDoc = iconv.convert(body).toString();
     const $ = cheerio.load(htmlDoc);
@@ -343,7 +399,39 @@ router.get('/stock', (req, res) => {
     }
     res.status(200);
     res.send(topTradingStockList);
-  })  
+  })
+  // request({url, encoding:null}, (err, response, body) => {
+  //   let iconv = new iconv1('euc-kr', 'utf-8');
+  //   let htmlDoc = iconv.convert(body).toString();
+  //   const $ = cheerio.load(htmlDoc);
+  //   const topTradingStockList = [];
+
+  //   for(var j = startTr; j < startTr + topTradingStockNum; j++){
+  //     $(`.type_2 > tbody > tr:nth-of-type(${j})`).map((i, element) => {
+  //       let rank = (j - startTr + 1) + "위";
+  //       let dir = $(element).find('td:nth-of-type(4)').find('img').toString();
+  //       if(dir.length == 0) dir = "보합";
+  //       else dir = stockDirection[$(element).find('td:nth-of-type(4)').find('img').attr('src').toString()];
+  //       let changePrice = $(element).find('td:nth-of-type(4)').find('span').text().trim();
+  //       let changeRate = $(element).find('td:nth-of-type(5)').find('span').text().trim();
+  //       if(dir === "상승" || dir === "상한") changePrice = "+" + changePrice;
+  //       else if (dir === "하락" || dir === "하한") changePrice = "-" + changePrice;
+  //       let stockJson = {};
+  //       let title = $(element).find('td:nth-of-type(2)').find('a').text().trim();
+  //       let price = $(element).find('td:nth-of-type(3)').text().trim();
+  //       stockJson["rank"] = rank;
+  //       stockJson["title"] = title;
+  //       stockJson["price"] = price;
+  //       stockJson["dir"] = dir;
+  //       stockJson["changePrice"] = changePrice;
+  //       stockJson["changeRate"] = changeRate;
+  //       stockJson["url"] = stockCodeUrl[title];
+  //       topTradingStockList.push(stockJson);
+  //     })
+  //   }
+  //   res.status(200);
+  //   res.send(topTradingStockList);
+  // })  
 })
 
 let stockCodeUrl = {};
@@ -364,11 +452,15 @@ router.post('/stock', (req, res) => {
     res.send(stockInfo)
   }
   else{
-    request({url, encoding:null}, (err, response, body) => {
+    axios({
+      method: 'get',
+      url: apiUrl
+    }).then((body) => {
       let iconv = new iconv1('euc-kr', 'utf-8');
       let htmlDoc = iconv.convert(body).toString();
       const $ = cheerio.load(htmlDoc);
-      let priceFragments = "", changePriceFragments = "", changeRateFragments = "";
+      let priceFragments = "", changePriceFragments = "", changeRateFragments = "", priceOfYesterday = "", topPrice = "", tradingVolume = "",
+        upperLimit = "";
       $('#chart_area > .rate_info > .today > .no_today > em').map((i, element) => {
         priceFragments += $(element).find('span').text().trim();
       })
@@ -378,6 +470,30 @@ router.post('/stock', (req, res) => {
       $('#chart_area > .rate_info > .today > .no_exday > em:nth-of-type(2)').map((i, element) => {
         changeRateFragments += $(element).find('span').text().trim();
       })
+      $('#chart_area > .rate_info > .no_info > tbody > tr:nth-of-type(1) > td > em').map((i, element) => {
+        switch(i){
+          case 0:
+            priceOfYesterday += $(element).find('span').text().trim();
+            priceOfYesterday = priceOfYesterday.substring(0, priceOfYesterday.length / 2);
+            break
+          case 1:
+            topPrice += $(element).find('span').text().trim();
+            topPrice = topPrice.substring(0, topPrice.length / 2);
+            break
+          case 2:
+            upperLimit += $(element).find('span').text().trim();
+            upperLimit = upperLimit.substring(0, upperLimit.length / 2);
+            break
+          case 3:
+            tradingVolume += $(element).find('span').text().trim();
+            tradingVolume = tradingVolume.substring(0, tradingVolume.length / 2);
+            break
+        }
+      })
+      console.log(priceOfYesterday);
+      console.log(topPrice);
+      console.log(upperLimit);
+      console.log(tradingVolume);
       let price = priceFragments.substring(0, priceFragments.length / 2);
       let dir = changePriceFragments.substring(0, 2);
       let changePrice = ""
@@ -390,25 +506,89 @@ router.post('/stock', (req, res) => {
       stockInfo["changePrice"] = changePrice; // 등락액
       stockInfo["changeRate"] = changeRate; // 등락률
       stockInfo["dir"] = dir; // 방향  
+      stockInfo["priceOfYesterday"] = priceOfYesterday; // 전일종가  
+      stockInfo["topPrice"] = topPrice; // 금일 고가 
+      stockInfo["upperLimit"] = upperLimit; // 상한가  
+      stockInfo["tradingVolume"] = tradingVolume; // 거래량
+
       stockInfo["url"] = url;
       res.status(200);
       res.send(stockInfo)
     })
+    // request({url, encoding:null}, (err, response, body) => {
+    //   let iconv = new iconv1('euc-kr', 'utf-8');
+    //   let htmlDoc = iconv.convert(body).toString();
+    //   const $ = cheerio.load(htmlDoc);
+    //   let priceFragments = "", changePriceFragments = "", changeRateFragments = "", priceOfYesterday = "", topPrice = "", tradingVolume = "",
+    //     upperLimit = "";
+    //   $('#chart_area > .rate_info > .today > .no_today > em').map((i, element) => {
+    //     priceFragments += $(element).find('span').text().trim();
+    //   })
+    //   $('#chart_area > .rate_info > .today > .no_exday > em:nth-of-type(1)').map((i, element) => {
+    //     changePriceFragments += $(element).find('span').text().trim();
+    //   })
+    //   $('#chart_area > .rate_info > .today > .no_exday > em:nth-of-type(2)').map((i, element) => {
+    //     changeRateFragments += $(element).find('span').text().trim();
+    //   })
+    //   $('#chart_area > .rate_info > .no_info > tbody > tr:nth-of-type(1) > td > em').map((i, element) => {
+    //     switch(i){
+    //       case 0:
+    //         priceOfYesterday += $(element).find('span').text().trim();
+    //         priceOfYesterday = priceOfYesterday.substring(0, priceOfYesterday.length / 2);
+    //         break
+    //       case 1:
+    //         topPrice += $(element).find('span').text().trim();
+    //         topPrice = topPrice.substring(0, topPrice.length / 2);
+    //         break
+    //       case 2:
+    //         upperLimit += $(element).find('span').text().trim();
+    //         upperLimit = upperLimit.substring(0, upperLimit.length / 2);
+    //         break
+    //       case 3:
+    //         tradingVolume += $(element).find('span').text().trim();
+    //         tradingVolume = tradingVolume.substring(0, tradingVolume.length / 2);
+    //         break
+    //     }
+    //   })
+    //   console.log(priceOfYesterday);
+    //   console.log(topPrice);
+    //   console.log(upperLimit);
+    //   console.log(tradingVolume);
+    //   let price = priceFragments.substring(0, priceFragments.length / 2);
+    //   let dir = changePriceFragments.substring(0, 2);
+    //   let changePrice = ""
+    //   if(dir === "상승") changePrice += "+";
+    //   else if(dir === "하락") changePrice += "-";
+    //   changePrice += changePriceFragments.substring(2, changePriceFragments.length / 2 + 1);
+    //   let changeRate = changeRateFragments.substring(0, changeRateFragments.length / 2) + "%";
+    //   stockInfo["title"] = title; // 종목명
+    //   stockInfo["price"] = price; // 현재가
+    //   stockInfo["changePrice"] = changePrice; // 등락액
+    //   stockInfo["changeRate"] = changeRate; // 등락률
+    //   stockInfo["dir"] = dir; // 방향  
+    //   stockInfo["priceOfYesterday"] = priceOfYesterday; // 전일종가  
+    //   stockInfo["topPrice"] = topPrice; // 금일 고가 
+    //   stockInfo["upperLimit"] = upperLimit; // 상한가  
+    //   stockInfo["tradingVolume"] = tradingVolume; // 거래량
+
+    //   stockInfo["url"] = url;
+    //   res.status(200);
+    //   res.send(stockInfo)
+    // })
   }  
 })
 
-router.get('/stockKeyword', (req, res) => {
-  // 1번
-})
-
-router.get('/youtubeKeyword', (req, res) => {
-  // 2번
+router.get('/stock/:keyword', (req, res) => {
+  // 키워드 리스트에 맞는 정보를 가져옵니다.
 })
 
 router.get('/indices', (req, res) => {
   let url = "https://finance.naver.com/";
   const indicesInfo = [];
-  request({url, encoding:null}, (err, response, body) => {
+  axios({
+    method: 'get',
+    url: apiUrl
+  }).then((body) => {
     let iconv = new iconv1('euc-kr', 'utf-8');
     let htmlDoc = iconv.convert(body).toString();
     const $ = cheerio.load(htmlDoc);
@@ -445,24 +625,61 @@ router.get('/indices', (req, res) => {
 
     res.send(indicesInfo);
   })
+  // request({url, encoding:null}, (err, response, body) => {
+  //   let iconv = new iconv1('euc-kr', 'utf-8');
+  //   let htmlDoc = iconv.convert(body).toString();
+  //   const $ = cheerio.load(htmlDoc);
+
+  //   // KOSPI
+  //   let kospiInfo = {};
+  //   let kospiIndexValue = $('.kospi_area > .heading_area .num_quot').find('.num').text().trim();
+  //   let changeKospiIndex = $('.kospi_area > .heading_area .num_quot').find('.num2').text().trim();
+  //   let changeKospiRate = $('.kospi_area > .heading_area .num_quot').find('.num3').text().trim();
+  //   let kospiDir = $('.kospi_area > .heading_area .num_quot > .num3').find('.blind').text().trim();
+  //   let kospiDirText = $('.kospi_area > .heading_area .num_quot').find('.blind').text().trim();
+
+  //   kospiInfo["title"] = "KOSPI";
+  //   kospiInfo["value"] = kospiIndexValue;
+  //   kospiInfo["changeIndex"] = kospiDir + changeKospiIndex;
+  //   kospiInfo["changeRate"] = changeKospiRate;
+  //   kospiInfo["dir"] = kospiDirText[1] + kospiDirText[2];
+  //   indicesInfo.push(kospiInfo);
+
+  //   // KOSDAQ
+  //   let kosdaqInfo = {};
+  //   let kosdaqIndexValue = $('.kosdaq_area > .heading_area .num_quot').find('.num').text().trim();
+  //   let changeKosdaqIndex = $('.kosdaq_area > .heading_area .num_quot').find('.num2').text().trim();
+  //   let changeKosdaqRate = $('.kosdaq_area > .heading_area .num_quot').find('.num3').text().trim();
+  //   let kosdaqDir = $('.kosdaq_area > .heading_area .num_quot > .num3').find('.blind').text().trim();
+  //   let kosdaqDirText = $('.kosdaq_area > .heading_area .num_quot').find('.blind').text().trim();
+
+  //   kosdaqInfo["title"] = "KOSDAQ";
+  //   kosdaqInfo["value"] = kosdaqIndexValue;
+  //   kosdaqInfo["changeIndex"] = kosdaqDir + changeKosdaqIndex;
+  //   kosdaqInfo["changeRate"] = changeKosdaqRate;
+  //   kosdaqInfo["dir"] = kosdaqDirText[1] + kosdaqDirText[2];
+  //   indicesInfo.push(kosdaqInfo);
+
+  //   res.send(indicesInfo);
+  // })
 })
 
-router.get('/test', (req, res) => {
-  let url = "https://finance.naver.com/sise/sise_quant.nhn";
-  request({url, encoding:null}, (err, response, body) => {
-    let resultArr = [];
-    let iconv = new iconv1('euc-kr', 'utf-8');
-    let htmlDoc = iconv.convert(body).toString();
-    const $ = cheerio.load(htmlDoc);
-    $('.type_2 tbody tr').map((i, element) => {
-      let nameObj = $(element).find('td > a');
-      result['name'] = String(nameObj.text());
-      // let priceObj = $(element).find('td')
-      // result['price'] = String($(element).find('td > a').text());
-    })
-    res.send(resultArr);
-  })
-})
+// router.get('/test', (req, res) => {
+//   let url = "https://finance.naver.com/sise/sise_quant.nhn";
+//   request({url, encoding:null}, (err, response, body) => {
+//     let resultArr = [];
+//     let iconv = new iconv1('euc-kr', 'utf-8');
+//     let htmlDoc = iconv.convert(body).toString();
+//     const $ = cheerio.load(htmlDoc);
+//     $('.type_2 tbody tr').map((i, element) => {
+//       let nameObj = $(element).find('td > a');
+//       result['name'] = String(nameObj.text());
+//       // let priceObj = $(element).find('td')
+//       // result['price'] = String($(element).find('td > a').text());
+//     })
+//     res.send(resultArr);
+//   })
+// })
 
 // Crypto Info (Upbit)
 let coinCode = {};
@@ -476,6 +693,7 @@ fs.readFile('../server/data/coinCode.json', 'utf8', (err, jsonFile) => {
 router.get('/coin', (req, res) => {
   // 거래량 상위 5종목
   // 코드 난독화로 크롤링 불가능
+  // Upbit OPEN API로 변경 예정(21.12.23)
   var url = `https://upbit.com/exchange?code=CRIX.UPBIT.KRW-BTC`; 
   request({url, encoding:null}, (err, response, body) => {
     let iconv = new iconv1('euc-kr', 'utf-8//translit//ignore');    

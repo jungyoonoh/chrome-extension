@@ -2,16 +2,11 @@ const express  = require('express');
 const router   = express.Router();
 const User = require('../models/User');
 
-
-
 router.patch('/:keyword/:type/add', async(req, res, next)=>{ // 키워드 추가
     next('route');
 })
 
 //db관련함수는 async/await로
-
-
-
 router.route('/user')
 .get(async(req,res,next)=>{//특정 user정보조회
     try{
@@ -63,7 +58,6 @@ router.route('/:type')
 
 
 //주식 키워드랑 일반 키워드 분리
-
 router.patch('/:keyword/:type/delete', async(req,res,next)=>{//키워드 삭제
   if(req.params.type==='youtube'){
     try{
@@ -91,9 +85,9 @@ router.patch('/:keyword/:type/delete', async(req,res,next)=>{//키워드 삭제
       next(err);
   }
   }
-  
 })
-router.patch('/:keyword/:type/add',async(req,res,next)=>{//키워드 추가
+
+router.patch('/:keyword/:type/add',async(req,res,next)=>{ // 키워드 추가
   if(req.params.type==='youtube'){
     try{
       const result=await User.updateOne({_id:req.session.passport.user}, {$addToSet: {youtubeKeyword: req.params.keyword }} );
@@ -121,6 +115,7 @@ router.patch('/:keyword/:type/add',async(req,res,next)=>{//키워드 추가
   }
   }
 })
+
 /*
 router.patch('/:keyword/delete',async(req,res,next)=>{//키워드 삭제
     try{
