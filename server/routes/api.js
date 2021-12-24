@@ -16,29 +16,28 @@ require('dotenv').config({path: path.join(__dirname, "../credentials/.env")}); /
 const request = require('request');
 const axios = require('axios');
 
-router.get('/news',async(req,res)=>{//핫토픽 뉴스를 크롤링을 이용해 가져옴 -> 수정해야함
-  const url=`https://news.naver.com/`;
+router.get('/news',async(req,res)=>{//핫토픽 다음 뉴스를 크롤링을 이용해 가져옴 
+  const url=`https://news.daum.net/`;
   const options={
     url: url,
-    method: "GET",
-    encoding:null,
+    method: 'get',
   };
+
   axios(options).then((response)=>{
     if(response.status == 200){
-      console.log(response.data);
-      let iconv = new iconv1('euc-kr', 'utf-8');
-      let htmlDoc = iconv.convert(response.data).toString();
-      const $=cheerio.load(htmlDoc);//encoding
+      const $=cheerio.load(response.data);
       const newsResult=[];
-      const list_arr=$(".brick-vowel _brick_column");
+      const list_arr=$(".item_issue");
       list_arr.map((idx,li)=>{
         newsResult[idx]={
-          url: `https://news.naver.com/${$(li).find("a").attr('href')}`,
+          url: $(li).find("a").attr('href'),
           thumb: $(li).find("a>img").attr('src'),
-          title:$(li).find(".list_tit").text().trim(),
-          comp:$(li).find(".list_press").text().trim(),
+          title:$(li).find(".cont_thumb>.tit_thumb>a").text(),
+          comp:$(li).find(".cont_thumb>.info_thumb").text(),
         }
+        console.log("반복");
       })
+      console.log(newsResult);
       res.status(200);
       res.send(newsResult);
     }
@@ -56,6 +55,7 @@ router.post('/news',(req,res)=>{//키워드 기반으로 크롤링하여 뉴스 
   };
   axios(options).then((response)=>{
     if(response.status == 200){
+      //원래 인코딩이 utf-8이라 iconv 사용하지않음
       const $=cheerio.load(response.data);
       const newsResult=[];
       const list_arr=$(".list_news>li>.news_wrap");
