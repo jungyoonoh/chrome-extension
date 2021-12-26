@@ -108,7 +108,7 @@ function CrudTest(){
           </div>
           ): 
           <div>
-          <a href="http://localhost:3001/auth/google">구글 아이디로 로그인</a>
+          <a href="http://localhost:8001/auth/google">구글 아이디로 로그인</a>
           <button onClick={addLocalKeyword}>키워드 추가</button>
           <button onClick={removeKeyword}>키워드 삭제</button>
           </div>
@@ -321,8 +321,8 @@ function Google() {
     <div id="google-test">
       {
         isLogin ?       
-          <a href="/auth/logout">로그아웃</a> : 
-          <a href="/auth/google">구글 아이디로 로그인</a>
+          <a href="http://localhost:8001/auth/logout">로그아웃</a> : 
+          <a href="http://localhost:8001/auth/google">구글 아이디로 로그인</a>
       }
     </div>
   )
