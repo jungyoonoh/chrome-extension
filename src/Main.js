@@ -53,7 +53,7 @@ const Main = () => {
         <div className="wrap">
             <header className="header">
                 <h1 className="blind">베지-토스트</h1>
-                {userName!==null && <p className="header_msg">{userName}님 안녕하세요!</p>}
+                {userName !== undefined && <p className="header_msg">{userName}님 안녕하세요!</p>}
                 <div className="header_icons">
                     <button className="header_button">
                         <BsFillPersonFill className="header_icon" onClick={Login}/>

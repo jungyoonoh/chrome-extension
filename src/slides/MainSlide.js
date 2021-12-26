@@ -32,11 +32,11 @@ function MainSlide() {
     const [stockTop5, setStockTop5] = useState([])
     const [isStockLoaded, setIsStockLoaded] = useState(false)
     const defultData = [
-        {rank:'1위', title:' ', price:'0', changeRate:'0', url:''},
-        {rank:'2위', title:' ', price:'0', changeRate:'0', url:''},
-        {rank:'3위', title:' ', price:'0', changeRate:'0', url:''},
-        {rank:'4위', title:' ', price:'0', changeRate:'0', url:''},
-        {rank:'5위', title:' ', price:'0', changeRate:'0', url:''},
+        {rank:'1위', title:'로딩중', price:'', changeRate:'', url:''},
+        {rank:'2위', title:'로딩중', price:'', changeRate:'', url:''},
+        {rank:'3위', title:'로딩중', price:'', changeRate:'', url:''},
+        {rank:'4위', title:'로딩중', price:'', changeRate:'', url:''},
+        {rank:'5위', title:'로딩중', price:'', changeRate:'', url:''},
     ]
     useEffect(()=>{
         if (!isStockLoaded){
@@ -71,9 +71,6 @@ function MainSlide() {
               setIsYoutubeLoaded(true)
         }
     },[isYoutubeLoaded])
-    const openYoutubeDetail =(url)=>{
-        window.open(url)
-    }
     // 5. 뉴스 top 5
     const [newsTop5, setNewsTop5] = useState([])
     const [isNewsLoaded, setIsNewsLoaded] = useState(false)
@@ -100,23 +97,24 @@ function MainSlide() {
             <link rel="stylesheet" type="text/css" charset="UTF-8" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css" /> 
             <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css" />
             <div className='google_search'>
-                <input className='google_search_input' value={searchTerm} onChange={onChange} onFocus={()=>{setIsInputFocused(true)}} onBlur={()=>{setIsInputFocused(false)}} onKeyPress={onCheckEnter}/>
-                <button 
-                    className='google_search_button'
-                    onClick={googleSearch}>
+                <label for="google" className="blind">구글 검색창</label>
+                <input id="google" className='google_search_input' value={searchTerm} onChange={onChange} onFocus={()=>{setIsInputFocused(true)}} onBlur={()=>{setIsInputFocused(false)}} onKeyPress={onCheckEnter}/>
+                <button type="button" className='google_search_button' onClick={googleSearch}>
                     <BiSearch className='google_search_icon'/>
+                    <span className="blind">검색하기</span>
                 </button>
             </div>
             <section className='stock_ranking'>
                 <div className="section_title_box">
                     <RiStockFill className="section_title_icon"/>
                     <h2 className="section_title">주식 거래량 Top 5</h2>
-                    <button className='refresh_button' onClick={()=>{setIsStockLoaded(false)}}>
+                    <button type="button" className='refresh_button' onClick={()=>{setIsStockLoaded(false)}}>
                         <BiRefresh className='refresh_icon'/>
+                        <span className="blind">주식 top5 새로고침</span>
                     </button>
                 </div>
                 <ol className="stock_list">
-                    {stockTop5.map((item, index)=>{
+                    {stockTop5.map((item)=>{
                         let price = "item_price";
                         let change_rate = "item_change_rate";
                         if (item.dir === "상승" || item.dir === "상한") {
@@ -130,9 +128,8 @@ function MainSlide() {
                             if (item.dir === "하한") change_rate += " em";
                         }
                         return(
-                            <li className='list_item'>
+                            <li className="list_item">
                                 <a href={item.url} target="_blank" className="item_link">
-                                    {/* <p className="item_rank">{item.rank}</p> */}
                                     <strong className="item_title">{item.title}</strong>
                                     <div className="item_price_box">
                                         <p className={price}>{item.price}</p>
@@ -140,73 +137,42 @@ function MainSlide() {
                                     </div>
                                 </a>
                             </li>
-    
                         )
                     })}
                 </ol>
             </section>
-            {/* <div style={{display:'flex', flexDirection:'row', justifyContent:'space-around', marginBottom:10}}>
-                <div className='stock-top5'>
-                    <div style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
-                        <RiStockFill className='h1-icon'/>
-                        <h2>주식 거래량 Top 5</h2>
-                        <button className='refresh-button' onClick={()=>{setIsStockLoaded(false)}}>
-                            <BiRefresh className='refresh-icon'/>
-                        </button>
+            <div className="popular_section">
+                <section className="popular_contents">
+                    <div className="section_title_box">
+                        <GrYoutube className="section_title_icon"/>
+                        <h2 className="section_title">유튜브 인기 동영상</h2>
                     </div>
-                    {stockTop5.map((item)=>{
-                        const dir = item.dir
-                        return(
-                            <div
-                                className='stock'
-                                onClick={()=>{openStockDetail(item.url)}}>
-                                <p style={{marginRight:3, color:'#595959'}}>{item.rank}</p>
-                                <h3
-                                    style={{width:150, textOverflow:'ellipsis',overflow:'hidden', whiteSpace:'nowrap'}}>
-                                    {item.title}
-                                </h3>
-                                <p style={{width:80, color:dir==="상승"||dir==="상한"?'#ed0101':dir==="하락"||dir==="하한"?'#0c44ac':'#595959'}}>
-                                    {item.price}
-                                </p>
-                                <p style={{width:80, color:dir==="상승"||dir==="상한"?'#970005':dir==="하락"||dir==="하한"?'#000052':'#595959', fontWeight:dir==="상한"||dir==="하한"?'bold':'normal'}}>{item.changeRate}</p>
-                            </div>
-
-                        )
-                    })}
-                </div>
+                    <ol className="popular_contents_list">
+                        {youtubeTop5.map((item)=>{
+                            return(
+                                <li className="list_item">
+                                    <CardM title={item.title} thumbnail={item.thumbnails} name={item.channelTitle} url={item.videoUrl}/>
+                                </li>
+                            )
+                        })}
+                    </ol>
+                </section>
+                <section className="popular_contents">
+                    <div className="section_title_box">
+                        <BiNews className='section_title_icon'/>
+                        <h2 className="section_title">언론사별 가장 많이 본 뉴스</h2>
+                    </div>
+                    <ol className="popular_contents_list">
+                        {newsTop5.map((item)=>{
+                            return(
+                                <li className="list_item">
+                                    <CardM title={item.title} thumbnail={item.thumb} name={item.comp} url={item.url}/>
+                                </li>
+                            )
+                        })}
+                    </ol>
+                </section>
             </div>
-            <div style={{display:'flex', flexDirection:'row', justifyContent:'space-around'}}>
-                <div className='youtube-top5'>
-                    <div style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
-                        <GrYoutube className='h1-icon'/>
-                        <h2>유튜브 인기 동영상</h2>
-                    </div>
-                    {youtubeTop5.map((item, index)=>{
-                        return(
-                            <div
-                                className='youtube'
-                                onClick={()=>{openYoutubeDetail(item.videoUrl)}}>
-                                <CardM title={item.title} thumbnail={item.thumbnails} name={item.channelTitle}/>
-                            </div>
-                        )
-                    })}
-                </div>
-                <div className='news-top5'>
-                    <div style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
-                        <BiNews className='h1-icon'/>
-                        <h2>언론사별 가장 많이 본 뉴스</h2>
-                    </div>
-                    {newsTop5.map((item, index)=>{
-                        return(
-                            <div
-                                className='news'
-                                onClick={()=>{openNewsDetail(item.url)}}>
-                                <CardM title={item.title} thumbnail={item.thumb} name={item.comp}/>
-                            </div>
-                        )
-                    })}
-                </div>
-            </div> */}
         </div>
     )
 }

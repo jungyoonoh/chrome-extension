@@ -1,56 +1,27 @@
 @charset "UTF-8";
+@import url("base.css");
 
-html, body, h1, h2, h3, h4, h5, h6, p, ol, ul, dl, dt, dd, li, a, button, input, textarea, hr, table, tr, td, figure {
-    margin: 0;
-    padding: 0;
-}
-html, body {
-    width: 100%;
-    height: 100%;
-}
-body, button, input, textarea, select {
-    font-size: 16px;
-}
-input, textarea {
-    border: none;
-}
-table {
-    border-collapse: collapse;
-    table-layout: fixed;
-}
-button {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-}
-a {
-    text-decoration: none;
-}
-ol, ul {
-    text-decoration: none;
-}
-img {
-    vertical-align: top;
-}
-body {
-    background-image: url("https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2850&q=80");
-}
 .wrap {
     overflow-y: auto;
     width: 1000px;
     height: 100vh;
     margin: 0 auto;
     background-color: rgba(0,0,0,0.5);
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+.wrap::-webkit-scrollbar {
+    display: none;
 }
 .header {
     padding: 20px 0;
 }
 .header_msg {
+    margin-bottom: 10px;
     text-align: center;
     color: #fff;
 }
 .header_icons {
-    margin-top: 10px;
     text-align: center;
 }
 .header_button {
@@ -68,12 +39,12 @@ body {
 }
 .google_search {
     text-align: center;
-    height: 40px;
+    height: 30px;
 }
 .google_search::before {
     display: inline-block;
     width: 10px;
-    height: 40px;
+    height: 30px;
     border-radius: 5px 0 0 5px;
     background-color: #2ec4b6;
     vertical-align: top;
@@ -81,15 +52,15 @@ body {
 }
 .google_search_input {
     width: 300px;
-    height: 30px;
+    height: 20px;
     padding: 5px;
     border: 0px;
     background-color: #fff;
     vertical-align: top;
 }
 .google_search_button {
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     border: 0px;
     border-radius: 0 5px 5px 0;
     background-color: #2ec4b6;
@@ -97,8 +68,8 @@ body {
 }
 .google_search_icon {
     display: block;
-    width: 30px;
-    height: 30px;
+    width: 20px;
+    height: 20px;
     margin: 5px;
     color: #fff;
 }
@@ -110,6 +81,7 @@ body {
     display: inline-block;
     width: 30px;
     height: 30px;
+    margin-right: 5px;
     color: #fff;
 }
 .section_title {
@@ -124,6 +96,7 @@ body {
 .main_slide .refresh_icon {
     width: 30px;
     height: 30px;
+    margin-left: 3px;
     color: #2ec4b6;
     transition: all 0.5s linear;
 }
@@ -190,4 +163,16 @@ body {
 }
 .stock_ranking .item_change_rate.em {
     font-weight: 600;
+}
+.popular_section::after {
+    display: block;
+    clear: both;
+    content: '';
+}
+.popular_contents {
+    width: 500px;
+    float: left;
+}
+.popular_contents_list .list_item + .list_item {
+    margin-top: 10px;
 }

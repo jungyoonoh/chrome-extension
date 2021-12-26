@@ -2,24 +2,16 @@
 import '../css/Components.css';
 
 const CardM=(props)=>{
-    const {thumbnail, title, name} = props;
+    const {thumbnail, title, name, url} = props;
 
     return (
-        <div 
-            className="card-m" 
-            style={{}}>
-                <div className="card-thumbnail">
-                    <img src={thumbnail} style={{width:70, height:70,marginRight:5, borderRadius:7}} />
-                </div>
-                <div>
-                    <div >
-                        <h3 style={{textOverflow:'ellipsis', overflow:'hidden'}}>{title}</h3>
-                    </div>
-                    <div>
-                        <p style={{textOverflow:'ellipsis', overflow:'hidden'}}>{name}</p>
-                    </div>
-                </div>
-        </div>
+        <a href={url} target="_blank" className="card_m" >
+            <img src={thumbnail} alt width="70" height="70" className="thumbnail"/>
+            <div className="content">
+                <strong className="title">{title}</strong>
+                <p className="name">{name}</p>
+            </div>
+        </a>
     )
 }
 export default CardM;
