@@ -21,7 +21,7 @@ const auth = require('./routes/auth');
 const database = require('./routes/database');
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 8001;
 
 // const {sequelize} = require('./database/models');
 
@@ -50,6 +50,7 @@ app.use(cookieParser());
 app.use('/api', api);
 app.use('/auth', auth);
 app.use('/database', database);
+
 app.listen(port, () => {
     console.log(`express is running on ${port}`);
 });
