@@ -1,5 +1,5 @@
 import 'css/Main.css';
-import { useRef, useState} from 'react';
+import { useRef, useState, useEffect} from 'react';
 import axios from "axios"
 import Slider from "react-slick";
 // import Slide from "./Slide"
@@ -20,18 +20,40 @@ const Main = () => {
     const onClickInfo =()=>{
         window.open("https://accessible-hedgehog-77e.notion.site/Toast-daca621379c844da84071452a7f46734")
     }
-    const [userName, setUserName] = useState('')
+    const [userName, setUserName] = useState(null)
     const [isLogin, setIsLogin] = useState(false)
-    const Login=async()=>{
-        window.location.href="http://localhost:3001/auth/google"
+    const Login=()=>{
+        if (isLogin){
+            setUserName(null)
+            window.location.href = "http://localhost:3001/auth/logout"
+        }else{
+            window.location.href="http://localhost:3001/auth/google"
+        }
         // const {data}=await axios.get(`/database`);
         // setUserName(data.displayName)
     }
+    const getLoginInfo = async () => {//로그인 여부 체크
+        await axios.get(
+          '/auth'
+          ).then(response => {
+            console.log(response);
+            if (response.data == "") setIsLogin(false);
+            else setIsLogin(true);
+            setUserName(response.data.displayName)
+          }).catch(err => {
+            console.log(err);
+          })
+      }
+      useEffect(() => {
+          if (!isLogin){
+              getLoginInfo()
+          }
+      }, [isLogin])
     return (
         <div className="contents">
             <header>
-                {userName!=''&& <p>{userName}님 안녕하세요!</p>}
                 <div className="header-icons">
+                    {userName!==null&& <p style={{color:'white'}}>{userName}님 안녕하세요!</p>}
                     <button className="header-button">
                         <BsFillPersonFill className="header-icon" onClick={Login}/>
                         
