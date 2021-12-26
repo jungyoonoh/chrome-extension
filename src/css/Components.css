@@ -1,11 +1,47 @@
-* {
+@charset "UTF-8";
+/* 
+html, body, h1, h2, h3, h4, h5, h6, p, ol, ul, dl, dt, dd, li, a, button, input, textarea, hr, table, tr, td, figure {
     margin: 0;
     padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-      sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+}
+html, body {
+    width: 100%;
+    height: 100%;
+}
+body, button, input, textarea, select {
+    font-size: 16px;
+}
+input, textarea {
+    border: none;
+}
+table {
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+a {
+    text-decoration: none;
+}
+ol, ul {
+    text-decoration: none;
+}
+img {
+    vertical-align: top;
+}
+body {
+    background-image: url("https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2850&q=80");
+} */
+.blind {
+    position: absolute;
+    clip: rect(0 0 0 0);
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
 }
 .card-m {
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);

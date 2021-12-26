@@ -50,38 +50,36 @@ const Main = () => {
           }
       }, [isLogin])
     return (
-        <div className="contents">
-            <header>
-                <div className="header-icons">
-                    {userName!==null&& <p style={{color:'white'}}>{userName}님 안녕하세요!</p>}
-                    <button className="header-button">
-                        <BsFillPersonFill className="header-icon" onClick={Login}/>
-                        
+        <div className="wrap">
+            <header className="header">
+                <h1 className="blind">베지-토스트</h1>
+                {userName!==null && <p className="header_msg">{userName}님 안녕하세요!</p>}
+                <div className="header_icons">
+                    <button className="header_button">
+                        <BsFillPersonFill className="header_icon" onClick={Login}/>
+                        <span className="blind">로그인</span>
                     </button>
-                    <button className="header-button">
-                        <AiFillHome className="header-icon" onClick={onClickHome}/>
+                    <button className="header_button">
+                        <AiFillHome className="header_icon" onClick={onClickHome}/>
+                        <span className="blind">홈으로</span>
                     </button>
-                    <button className="header-button">
-                        <FaInfoCircle className="header-icon" onClick={onClickInfo}/>
+                    <button className="header_button">
+                        <FaInfoCircle className="header_icon" onClick={onClickInfo}/>
+                        <span className="blind">개발자 정보</span>
                     </button>
                 </div>
             </header>
-            <div className="main">
+            <main className="main">
                 <Slider
-                    style={{}}
                     speed={500}
                     dots={true}
                     ref={slideRef}
-                >
-                    <MainSlide></MainSlide>
-                    {/* <StockSlide></StockSlide> */}
-                    <YoutubeSlide></YoutubeSlide>
-
+                    arrows={false}
+                    infinite={true}>
+                        <MainSlide></MainSlide>
+                        <YoutubeSlide></YoutubeSlide>
                 </Slider>
-            </div>
-            {/* <footer>
-                    <p>footer … </p>
-                </footer> */}
+            </main>
         </div>
 
 

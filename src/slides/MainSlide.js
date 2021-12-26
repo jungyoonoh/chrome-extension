@@ -1,5 +1,5 @@
 import { useEffect, useState,forwardRef, useImperativeHandle} from 'react';
-import 'css/MainSlide.css';
+import 'css/Main.css';
 import axios from "axios"
 import {GrFormRefresh, GrYoutube, } from 'react-icons/gr'
 import {BiSearch, BiNews, BiRefresh} from 'react-icons/bi'
@@ -52,9 +52,9 @@ function MainSlide() {
             setIsStockLoaded(true)
         }
     },[isStockLoaded])
-    const openStockDetail = (url)=>{
-        window.open(url)
-    }
+    // const openStockDetail = (url)=>{
+    //     window.open(url)
+    // }
     // 4. 유튜브 top 5
 
     const [youtubeTop5, setYoutubeTop5] = useState([])
@@ -96,24 +96,56 @@ function MainSlide() {
     }
     
     return (
-        <div style={{}}>
+        <div className="main_slide">
             <link rel="stylesheet" type="text/css" charset="UTF-8" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css" /> 
             <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css" />
-            <div style={{display:'flex', flexDirection:'row', justifyContent:'space-around', marginBottom:10}}>
-                <div>
-                    <div className='google-search' style={{}}>
-                        <div className='google-search-left'></div>
-                        <input className='google-search-input' value={searchTerm} onChange={onChange} onFocus={()=>{setIsInputFocused(true)}} onBlur={()=>{setIsInputFocused(false)}} onKeyPress={onCheckEnter}/>
-                        <button 
-                            className='google-search-button'
-                            onClick={googleSearch}>
-                            <BiSearch className='google-search-icon'/>
-                        </button>
-                    </div>
-                    <div className='frequent-sites' style={{backgroundColor:'yellow'}}>
-                        
-                    </div>
+            <div className='google_search'>
+                <input className='google_search_input' value={searchTerm} onChange={onChange} onFocus={()=>{setIsInputFocused(true)}} onBlur={()=>{setIsInputFocused(false)}} onKeyPress={onCheckEnter}/>
+                <button 
+                    className='google_search_button'
+                    onClick={googleSearch}>
+                    <BiSearch className='google_search_icon'/>
+                </button>
+            </div>
+            <section className='stock_ranking'>
+                <div className="section_title_box">
+                    <RiStockFill className="section_title_icon"/>
+                    <h2 className="section_title">주식 거래량 Top 5</h2>
+                    <button className='refresh_button' onClick={()=>{setIsStockLoaded(false)}}>
+                        <BiRefresh className='refresh_icon'/>
+                    </button>
                 </div>
+                <ol className="stock_list">
+                    {stockTop5.map((item, index)=>{
+                        let price = "item_price";
+                        let change_rate = "item_change_rate";
+                        if (item.dir === "상승" || item.dir === "상한") {
+                            price += " up";
+                            change_rate += " up";
+                            if (item.dir === "상한") change_rate += " em";
+                        }
+                        else if (item.dir === "하락" || item.dir === "하한") {
+                            price += " down";
+                            change_rate += " down";
+                            if (item.dir === "하한") change_rate += " em";
+                        }
+                        return(
+                            <li className='list_item'>
+                                <a href={item.url} target="_blank" className="item_link">
+                                    {/* <p className="item_rank">{item.rank}</p> */}
+                                    <strong className="item_title">{item.title}</strong>
+                                    <div className="item_price_box">
+                                        <p className={price}>{item.price}</p>
+                                        <p className={change_rate}>{item.changeRate}</p>
+                                    </div>
+                                </a>
+                            </li>
+    
+                        )
+                    })}
+                </ol>
+            </section>
+            {/* <div style={{display:'flex', flexDirection:'row', justifyContent:'space-around', marginBottom:10}}>
                 <div className='stock-top5'>
                     <div style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
                         <RiStockFill className='h1-icon'/>
@@ -123,13 +155,6 @@ function MainSlide() {
                         </button>
                     </div>
                     {stockTop5.map((item)=>{
-                            // changePrice: "+30"
-                            // changeRate: "+1.50%"
-                            // dir: "상승"
-                            // price: "2,025"
-                            // rank: "1위"
-                            // title: "KODEX 200선물인버스2X"
-                            // url: "https://finance.naver.com
                         const dir = item.dir
                         return(
                             <div
@@ -181,7 +206,7 @@ function MainSlide() {
                         )
                     })}
                 </div>
-            </div>
+            </div> */}
         </div>
     )
 }
