@@ -44,12 +44,12 @@ const Main = () => {
           }).catch(err => {
             console.log(err);
           })
-      }
-      useEffect(() => {
-          if (!isLogin){
-              getLoginInfo()
-          }
-      }, [isLogin])
+    }
+    useEffect(() => {
+        if (!isLogin){
+            getLoginInfo()
+        }
+    }, [isLogin])
     const goLeft = () => {
         slideRef.current.slickPrev();
     }

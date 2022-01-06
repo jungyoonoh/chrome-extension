@@ -10,21 +10,33 @@ function YoutubeSlide(){
         setKeyword(e.target.value)
         console.log(e.target.value)
     }
-    const [videos, setVideos] = useState([1,2,3, 4,5,6,7,8,9,10])
-    const [keywords, setKeywords] = useState([])
+    const [videos, setVideos] = useState([]);
+    const [keywords, setKeywords] = useState([]);
     const maxLength = 5
-    const addKeyword = async () => {
-        if (!keywords.includes(keyword) && keyword!=="") // 아무것도 입력안했을 때, 이미 있을 때 예외처리 한 것
-            keywords.push(keyword);
-            // const {data} = await axios.patch(`/database/${keyword}/add`);
-            // console.log(data);
+    const addKeyword = () => {
+        if (!keywords.includes(keyword) && keyword!=="") {
+            let temp = keywords.slice();
+            temp.push(keyword);
+            setKeywords(temp);
             setKeyword('')
+        }
     }
-    const deleteKeyword = async (item)=>{
-        setKeywords(keywords.filter((element) => element !== item));
-        // const {data}=await axios.patch(`/database/${keyword}/delete`);
-        // console.log(data);
+    const deleteKeyword = (item)=>{
+        let temp = keywords.slice();
+        setKeywords(temp.filter((element) => element !== item));
     }
+    useEffect(() => {
+        axios
+            .post(
+                '/api/youtube', 
+                {keyword:keywords})
+            .then(response => {
+                console.log("response", response);
+                setVideos(response.data);
+            })
+            .catch(err => {console.log(err)});
+    }, [keywords]);
+    
     return (
         <div>
             <div className="keyword-container">
