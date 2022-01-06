@@ -148,12 +148,14 @@ function MainSlide() {
                         <h2 className="section_title">유튜브 인기 동영상</h2>
                     </div>
                     <ol className="popular_contents_list">
-                        {youtubeTop5.map((item)=>{
-                            return(
-                                <li className="list_item">
-                                    <CardM title={item.title} thumbnail={item.thumbnails} name={item.channelTitle} url={item.videoUrl}/>
-                                </li>
-                            )
+                        {youtubeTop5.map((item, index)=>{
+                            if (index < 4){
+                                return(
+                                    <li className="list_item">
+                                        <CardM title={item.title} thumbnail={item.thumbnails} name={item.channelTitle} url={item.videoUrl}/>
+                                    </li>
+                                )
+                            }
                         })}
                     </ol>
                 </section>
