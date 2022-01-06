@@ -1,33 +1,21 @@
 .keyword-container {
     display: flex;
     flex-direction: row;
-    padding-left: 5%;
+    padding-left: 70px;
     margin-bottom: 30px;
 }
-
 .keyword {
-    background-color: #2ec4b6;
-    color: white;
-    border-radius: 15px;
     display: flex;
     width: auto;
     height: 30px;
-    align-items: center;
-    justify-content: center;
-    padding-left: 15px;
-    padding-right: 15px;
     margin-right: 15px;
-}
-/* .add-keyword-btn {
-    background-color: yellow;
+    padding: 0 15px;
     border-radius: 15px;
-    width: 30px;
-    height: 30px;
-    display: flex;
+    background-color: #2ec4b6;
     align-items: center;
     justify-content: center;
-} */
-
+    color: white;
+}
 .add-keyword-container{
     display: flex;
     flex-direction: row;
@@ -36,17 +24,27 @@
 }
 .add-keyword-input {
     margin-right: 15px;
-    padding-left: 15px;
-    padding-right: 15px;
-    border-radius: 15px;
+    padding: 0 15px;
     border: 0px;
+    border-radius: 15px;
     outline: none;
-
 }
 .add-keyword-button{
     width: 30px;
     height: 30px;
+    border: 0;
     border-radius: 15px;
-    border: 0px;
     background-color: #2ec4b6;
+}
+.youtube_list {
+    display: block;
+    clear: both;
+    content: '';
+}
+.youtube_list .list_box {
+    width: 500px;
+    float: left;
+}
+.youtube_list .list_item + .list_item {
+    margin-top: 10px;
 }

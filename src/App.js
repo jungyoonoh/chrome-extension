@@ -222,7 +222,6 @@ const Youtube = () => {
 
 const Stock = () => {
   const [stockKeyword, setStockKeyword] = useState(null);
-
   const getStockData = async () => {
     await axios.post(
       '/api/stock', 
