@@ -6,9 +6,10 @@ import Slider from "react-slick";
 import MainSlide from 'slides/MainSlide';
 import StockSlide from 'slides/StockSlide';
 
-import { AiFillHome } from 'react-icons/ai'
-import { BsFillPersonFill, BsFillChatDotsFill } from 'react-icons/bs'
-import {FaInfoCircle, } from 'react-icons/fa'
+import { AiFillHome } from 'react-icons/ai';
+import { BsFillPersonFill,  } from 'react-icons/bs';
+import {FaInfoCircle, } from 'react-icons/fa';
+import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 import YoutubeSlide from 'slides/YoutubeSlide';
 // https://react-icons.github.io/react-icons
 
@@ -49,12 +50,22 @@ const Main = () => {
               getLoginInfo()
           }
       }, [isLogin])
+    const goLeft = () => {
+        slideRef.current.slickPrev();
+    }
+    const goRight = () => {
+        slideRef.current.slickNext();
+    }
     return (
         <div className="wrap">
             <header className="header">
                 <h1 className="blind">베지-토스트</h1>
                 {userName !== undefined && <p className="header_msg">{userName}님 안녕하세요!</p>}
                 <div className="header_icons">
+                    <button className="header_button">
+                        <FiArrowLeft className="header_icon" onClick={goLeft}/>
+                        <span className="blind">왼쪽 슬라이드로</span>
+                    </button>
                     <button className="header_button">
                         <BsFillPersonFill className="header_icon" onClick={Login}/>
                         <span className="blind">로그인</span>
@@ -66,6 +77,10 @@ const Main = () => {
                     <button className="header_button">
                         <FaInfoCircle className="header_icon" onClick={onClickInfo}/>
                         <span className="blind">개발자 정보</span>
+                    </button>
+                    <button className="header_button">
+                        <FiArrowRight className="header_icon" onClick={goRight}/>
+                        <span className="blind">오른쪽 슬라이드로</span>
                     </button>
                 </div>
             </header>
