@@ -12,7 +12,7 @@ function YoutubeSlide(){
     }
     const [videos, setVideos] = useState([]);
     const [keywords, setKeywords] = useState([]);
-    const maxLength = 5
+    const maxLength = 6
     const addKeyword = () => {
         if (!keywords.includes(keyword) && keyword!=="") {
             let temp = keywords.slice();
@@ -38,7 +38,7 @@ function YoutubeSlide(){
     }, [keywords]);
     
     return (
-        <div>
+        <>
             <div className="keyword-container">
                 {keywords.map((item)=>{
                     return(
@@ -67,7 +67,7 @@ function YoutubeSlide(){
                 </div>
                 <div className='list_box'>
                     {videos.map((item, index)=> { 
-                        if(index >= 5 && index < 10){
+                        if(index >= 6 && index < 12){
                             return(
                                 <div className="list_item">
                                     <CardM title={item.title} thumbnail={item.thumbnails} name={item.channelTitle} url={item.videoUrl}/>
@@ -78,7 +78,7 @@ function YoutubeSlide(){
                     )}
                 </div>
             </div>
-        </div>
+        </>
     )
 }
 

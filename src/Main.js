@@ -93,6 +93,7 @@ const Main = () => {
                     infinite={true}>
                         <MainSlide></MainSlide>
                         <YoutubeSlide></YoutubeSlide>
+                        <StockSlide></StockSlide>
                 </Slider>
             </main>
         </div>
