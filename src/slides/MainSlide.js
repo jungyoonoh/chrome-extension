@@ -26,6 +26,19 @@ function MainSlide() {
             googleSearch()
         }
     }
+    const [testProps, setTestProps] = useState({
+        main: {
+            temp: 266.41,
+            feels_like: 263.63,
+            temp_min: 263.56,
+            temp_max: 267.68,
+            pressure: 1022,
+            humidity: 41
+            },
+        icon: "http://openweathermap.org/img/wn/01n@2x.png",
+        addr: "서울특별시 중구 회현동1가"
+    });
+    const ftoc = (f) => ((parseFloat(f)-32)*5/9).toFixed();
     // 2. 자주가는사이트
 
     // 3. 주식 top 5
@@ -141,6 +154,29 @@ function MainSlide() {
                     })}
                 </ol>
             </section>
+            <div className="popular_section">
+                <section className="popular_contents">
+                    <img src={testProps.icon} alt="맑음" width="30" height="30"/>
+                    <p>{testProps.addr}</p>
+                    <p>
+                        <span className="blind">섭씨</span>
+                            {ftoc(testProps.main.temp)}
+                        <span className="blind">도</span>
+                    </p>
+                    <p>
+                        <span className="blind">최고기온</span>
+                        {ftoc(testProps.main.temp_max)}
+                    </p>
+                    <p>
+                        <span className="blind">최wj기온</span>
+                        {ftoc(testProps.main.temp_min)}
+                    </p>
+                    <p>습도 {testProps.main.humidity}</p>
+                </section>
+                <section className="popular_contents">
+                    뭐였도라
+                </section>
+            </div>
             <div className="popular_section">
                 <section className="popular_contents">
                     <div className="section_title_box">
