@@ -25,16 +25,16 @@
     text-align: center;
 }
 .header_button {
-    width: 30px;
-    height: 30px;
+    width: 20px;
+    height: 20px;
     margin: 0 4px;
 }
 .header_button:hover .header_icon {
     color: #2ec4b6;
 }
 .header_icon {
-    width:30px;
-    height:30px;
+    width:20px;
+    height:20px;
     color: #fff;
 }
 .google_search {
@@ -80,23 +80,26 @@
 }
 .section_title_icon {
     display: inline-block;
-    width: 30px;
-    height: 30px;
+    width: 25px;
+    height: 25px;
     margin-right: 5px;
+    vertical-align: top;
     color: #fff;
 }
 .section_title {
     display: inline-block;
+    font-size: 20px;
     vertical-align: top;
     color: #fff;
 }
 .main_slide .refresh_button {
-    width: 30px;
-    height: 30px;
+    width: 25px;
+    height: 25px;
+    vertical-align: top;
 }
 .main_slide .refresh_icon {
-    width: 30px;
-    height: 30px;
+    width: 25px;
+    height: 25px;
     margin-left: 3px;
     color: #2ec4b6;
     transition: all 0.5s linear;
@@ -110,7 +113,7 @@
 }
 .stock_ranking .list_item {
     display: inline-block;
-    width: 160px;
+    width: 130px;
     margin: 0 5px;
     padding: 10px;
     border-radius: 5px;
@@ -128,10 +131,15 @@
 .stock_ranking .item_title {
     overflow: hidden;
     display: block;
+    font-size: 14px;
     font-weight: 600;
     text-overflow: ellipsis;
     white-space: nowrap;
     color: #222;
+}
+.stock_ranking .item_price_box {
+    margin-top: 3px;
+    font-size: 13px;
 }
 .stock_ranking .item_price_box::after {
     display: block;

@@ -6,7 +6,7 @@ const CardM=(props)=>{
 
     return (
         <a href={url} target="_blank" className="card_m" >
-            <img src={thumbnail} alt width="70" height="70" className="thumbnail"/>
+            <img src={thumbnail} alt width="70" height="55" className="thumbnail"/>
             <div className="content">
                 <strong className="title">{title}</strong>
                 <p className="name">{name}</p>
