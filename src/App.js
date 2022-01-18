@@ -178,17 +178,24 @@ function News(){
 
 //input 박스 담는거 하나로 통합
 function Weather(){
-  const [locationKeyword,setLocation]=useState(``);
   const [location,setMyLocation]=useState({});
-
-  const locationApi=async()=>{
-    const {data}=await axios.post('/api/location',{keyword:locationKeyword});
-    locationArray=data;
-    console.log(data);
-  }
   const weatherApi=async()=>{
-    const {data}=await axios.post('/api/weather',{location: location});
-    console.log(data);
+    if(navigator.geolocation){
+      navigator.geolocation.getCurrentPosition(async (position)=>{
+        setMyLocation({lat:position.coords.latitude,lon:position.coords.longitude});
+        const {data}=await axios.post('/api/weather',{location: location});
+        console.log(data);
+      },(error)=>{
+        console.error(error);
+      },{
+        enableHighAccuracy:false,
+        maximumAge:0,
+        timeout:Infinity
+      });
+    }else{
+      alert('GPS를 지원하지 않음');
+    }
+
   }
   const baseWeather=async()=>{
     const {data}=await axios.get('/api/weather');
@@ -197,23 +204,12 @@ function Weather(){
  
   return (
     <div>
-      <input className="input" name="weather" value={locationKeyword} onChange={e =>{setLocation(e.target.value);} }/>
-      <button className="test" onClick={locationApi}>
-      주소검색하기
-      </button>
       <button className="test" onClick={weatherApi}>
-      날씨검색하기
+      현재위치 날씨 가져오기
       </button>
       <button className="test" onClick={baseWeather}>
-      날씨 기본값
+      날씨 기본값 가져오기
       </button>
-      {locationArray.map((item)=>{
-      return(
-        <div>
-          <button onClick={ ()=>{setLocation(item.address); setMyLocation(item);}} >{item.address} </button>
-        </div>
-      );
-    })} 
     </div>
   )
 }
@@ -257,6 +253,7 @@ const Youtube = () => {
 
 const Stock = () => {
   const [stockKeyword, setStockKeyword] = useState(null);
+
   const getStockData = async () => {
     await axios.post(
       '/api/stock', 

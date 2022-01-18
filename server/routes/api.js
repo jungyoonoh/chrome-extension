@@ -75,31 +75,7 @@ router.post('/news',(req,res)=>{//키워드 기반으로 크롤링하여 뉴스 
   });
 });
 
-router.post('/location',(req,res)=>{//키워드 기반으로 위치정보를 가져옴 (특정 위치의 날씨정보 가져올 때 사용)
-  const locationUrl=`https://dapi.kakao.com/v2/local/search/address.json?query=${encodeURI(req.body.keyword)}`;
-  const options={
-    url:locationUrl,
-    type:'get',
-    method:'get',
-    headers: {'Authorization' : `KakaoAK ${process.env.KAKAO_LOCATION_API_KEY}`}
-  };
-  axios(options).then((response)=>{
-    if(response.status == 200){
-      const {documents}=response.data;
-      const addrArray=[];
-      documents.map((addr,idx)=>{
-        addrArray[idx]={
-          address:addr.address_name,
-          lat:addr.y,
-          lon:addr.x,
-        }
-      })
-      res.send(addrArray);
-    }
-  }).catch((error)=>{
-    console.log(error);
-  });
-});
+
 
 router.get(`/weather`,(req,res)=>{// default 위치인 서울 중구의 날씨 가져옴
   const url=`https://api.openweathermap.org/data/2.5/weather?lat=37.5555892070291&lon=126.981204133005&appid=${process.env.WEATHER_API_KEY}`;
