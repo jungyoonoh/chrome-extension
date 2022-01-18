@@ -26,9 +26,9 @@ const Main = () => {
     const Login=()=>{
         if (isLogin){
             setUserName(null)
-            window.location.href = "http://localhost:3001/auth/logout"
+            window.location.href = "http://localhost:8001/auth/logout"
         }else{
-            window.location.href="http://localhost:3001/auth/google"
+            window.location.href = "http://localhost:8001/auth/google"
         }
         // const {data}=await axios.get(`/database`);
         // setUserName(data.displayName)
