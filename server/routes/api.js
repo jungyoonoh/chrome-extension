@@ -37,9 +37,7 @@ router.get('/news',async(req,res)=>{//핫토픽 다음 뉴스를 크롤링을 �
           title:$(li).find(".cont_thumb>.tit_thumb>a").text(),
           comp:$(li).find(".cont_thumb>.info_thumb").text(),
         }
-        console.log("반복");
       })
-      console.log(newsResult);
       res.status(200);
       res.send(newsResult);
     }
@@ -197,27 +195,37 @@ router.get('/youtube', (req, res) => {
   })
 })
 
-router.post('/youtube', (req, res) => {
-  // 유튜브 정보 가져오기
-  // 영문 검색시
+router.post('/youtube', async (req, res) => {
   var keyword = req.body.keyword;
+  
+  try{
+    const dbRes = await User.updateOne({_id:req.session.passport.user}, {$addToSet: {youtubeKeyword: keyword}});
+  } catch (err) {
+    // 비로그인은 키워드 저장 과정 없이 에러처리 후 영상만 제공, 모듈을 찢는 과정이 필요
+    console.log(err);
+  }
 
   // 검색 필터 기준값
   // order, relevance.. 등
   var filter = "relevance";
-  var displayNum = 5;
+  var displayNum = 10;
 
   var optionParams = {
-      q:keyword,
-      part:"snippet",
-      type:"video",
-      order:filter,
-      key:process.env.GCP_API_KEY,
-      maxResults:displayNum
+    part:"snippet",
+    type:"video",
+    order:filter,
+    key:process.env.GCP_API_KEY,
+    maxResults:displayNum
   };
 
-  // 한글 검색어 사용시 인코딩 과정 필요
-  optionParams.q = encodeURI(optionParams.q);
+  let multiKeyword = ""
+  for(let i = 0; i < keyword.length; i++){
+    searchKeyword = keyword[i];
+    // 한글 검색어 사용시 인코딩 필요 + 멀티쿼리
+    multiKeyword += encodeURI(searchKeyword) + "|"
+  }
+  multiKeyword = multiKeyword.substring(0, multiKeyword.length - 1);
+  optionParams.q = multiKeyword;
 
   var apiUrl = "https://www.googleapis.com/youtube/v3/search?";
   
@@ -234,6 +242,7 @@ router.post('/youtube', (req, res) => {
     method: 'GET',
   }).then((response) => {
     result = response.data;
+    console.log(result)
     // result = JSON.parse(body);
     const videoInfoList = [];
     for(var i = 0; i < displayNum; i++){
@@ -250,68 +259,40 @@ router.post('/youtube', (req, res) => {
   })
 })
 
-router.get('/youtube/search', async (req, res) => {
+// ------------------------------------------------------------------
+// Youtube Keyword of User
+// ------------------------------------------------------------------
+
+router.get('/youtube/keyword', async (req, res) => {
   let user = null;
-  try{
+  try {
     user = await User.findOne({_id:req.session.passport.user});
-    console.log(user + "'s keyword Search is Successed");
-    res.json(result); // matchcount 가 1이고 modified count 0 이면 중복
-  }catch(err){
+    console.log(user + "'s Youtube Keyword Search is Successed");
+  } catch (err) {
     console.error(err);
-    res.status(504).send("ERROR");
+    res.status(504).send("Not Logined");
   }
 
   if (user.youtubeKeyword.length == 0){
     res.status(200).send("NO DATA");
-  }
-
-  // 검색 필터 기준값
-  // order, relevance.. 등
-  var filter = "relevance";
-  const videoInfoList = [];
-  for(var i = 0; i < user.youtubeKeyword.length; i++){
-    keyword = user.youtubeKeyword[i];
-    var displayNum = Math.round(displayNum = 12 / youtubeKeyword.length);
-    var optionParams = {
-        q:'keyword',
-        part:"snippet",
-        type:"video",
-        order:filter,
-        key:process.env.GCP_API_KEY,
-        maxResults:displayNum
-    };
-
-    // 한글 검색어 사용시 인코딩 과정 필요
-    optionParams.q = encodeURI(optionParams.q);
-
-    var apiUrl = "https://www.googleapis.com/youtube/v3/search?";
-  
-    for(var option in optionParams){
-      apiUrl += option + "=" + optionParams[option]+"&";
+  }else{
+    let keywordList = new Array();
+    for(var i = 0; i < user.youtubeKeyword.length; i++){
+      keywordList.push(user.youtubeKeyword[i]);
     }
-  
-    apiUrl = apiUrl.substring(0, apiUrl.length - 1);
-
-    var videoBaseUrl = "https://www.youtube.com/watch?v=";
-
-    axios({
-      url: apiUrl,
-      method: 'GET'
-    }).then((body) => {
-      result = JSON.parse(body);
-      for(var i = 0; i < displayNum; i++){
-        const videoInfo = {};
-        // 썸네일 사이즈 (defauit : 120x90 / medium : 320x180 / high : 480x360)
-        videoInfo["title"] = result["items"][i]["snippet"]["title"];
-        videoInfo["description"] = result["items"][i]["snippet"]["description"];
-        videoInfo["channelTitle"] = result["items"][i]["snippet"]["channelTitle"];
-        videoInfo["thumbnails"] = result["items"][i]["snippet"]["thumbnails"]["high"]["url"]; 
-        videoInfo["videoUrl"] = videoBaseUrl + result["items"][i]["id"]["videoId"];
-        videoInfoList.push(videoInfo);
-      }
-    })
+    res.send(keywordList);
   }
-  res.send(videoInfoList);
+})
+
+router.delete('/youtube/keyword', async (req, res) => {
+  try {
+    result = await User.updateOne({_id:req.session.passport.user}, {$pull: {youtubeKeyword : req.body.keyword}});
+    console.log(req.body.keyword + " is Deleted");
+    res.status(200).send("DELETE SUCCESS");
+  } catch (err) {
+    console.error(err);
+    res.status(504).send("Not Logined || Keyword ERROR");
+  }
 })
 
 // ------------------------------------------------------------------
@@ -378,9 +359,14 @@ fs.readFile('../server/data/stockCodeUrl_pc.json', 'utf8', (err, jsonFile) => {
     console.log("StockCode Load Fin!");
 })
 
-// 종목 가격
-router.post('/stock', (req, res) => {
+// 종목별 카드에 담길 데이터
+router.post('/stock', async (req, res) => {
   const title = req.body.keyword;
+  try{
+    const dbRes = await User.updateOne({_id:req.session.passport.user}, {$addToSet: {stockKeyword: title}});
+  } catch (err) {
+    console.log(err);
+  }
   const apiUrl = stockCodeUrl[title];
   const stockInfo = {};
   if(apiUrl === undefined) {
@@ -425,7 +411,10 @@ router.post('/stock', (req, res) => {
             tradingVolume = tradingVolume.substring(0, tradingVolume.length / 2);
             break
         }
-      })
+      })      
+      let capitalization = $('#tab_con1 > .first > table > tbody > tr:nth-of-type(1) > td > em').text();
+      let capitalizationRank = $('#tab_con1 > .first > table > tbody > tr:nth-of-type(2) > td').text().trim();     
+
       let price = priceFragments.substring(0, priceFragments.length / 2);
       let dir = changePriceFragments.substring(0, 2);
       let changePrice = ""
@@ -439,19 +428,54 @@ router.post('/stock', (req, res) => {
       stockInfo["changeRate"] = changeRate; // 등락률
       stockInfo["dir"] = dir; // 방향  
       stockInfo["priceOfYesterday"] = priceOfYesterday; // 전일종가  
-      stockInfo["topPrice"] = topPrice; // 금일 고가 
-      stockInfo["upperLimit"] = upperLimit; // 상한가  
+      // stockInfo["topPrice"] = topPrice; // 금일 고가 
+      // stockInfo["upperLimit"] = upperLimit; // 상한가  
       stockInfo["tradingVolume"] = tradingVolume; // 거래량
-      stockInfo["url"] = apiUrl;
+      stockInfo["capitalization"] = capitalization.replace(/(\s*)/g,"") +"억원"; // 시가총액
+      stockInfo["capitalizationRank"] = capitalizationRank; // 시가총액 순위
+      stockInfo["url"] = apiUrl; // 사이트 링크
       res.status(200);
       res.send(stockInfo);
     })
   }  
 })
 
-router.get('/stock/:keyword', (req, res) => {
-  // 키워드 리스트에 맞는 정보를 가져옵니다.
+// ------------------------------------------------------------------
+// Stock Keyword of User
+// ------------------------------------------------------------------
+
+router.get('/stock/keyword', async (req, res) => {
+  let user = null;
+  try {
+    user = await User.findOne({_id:req.session.passport.user});
+    console.log(user + "'s Stock Keyword Search is Successed");
+  } catch (err) {
+    console.error(err);
+    res.status(504).send("Not Logined");
+  }
+
+  if (user.stockKeyword.length == 0){
+    res.status(200).send("NO DATA");
+  }else{
+    let keywordList = new Array();
+    for(var i = 0; i < user.stockKeyword.length; i++){
+      keywordList.push(user.stockKeyword[i]);
+    }
+    res.send(keywordList);
+  }
 })
+
+router.delete('/stock/keyword', async (req, res) => {
+  try {
+    let result = await User.updateOne({_id:req.session.passport.user}, {$pull: {stockKeyword : req.body.keyword}});
+    console.log(req.body.keyword + " is Deleted");
+    res.status(200).send("DELETE SUCCESS");
+  } catch (err) {
+    console.error(err);
+    res.status(504).send("Not Logined || Keyword ERROR");
+  }
+})
+
 
 router.get('/indices', (req, res) => {
   let apiUrl = "https://finance.naver.com/";

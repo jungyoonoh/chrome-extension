@@ -4,8 +4,6 @@ import React  from 'react';
 import axios from "axios"
 
 let locationArray=[];
-
-
 //비 로그인 (localstorage code)
 let keyword="";
 
@@ -47,6 +45,9 @@ const removeKeyword=()=>{// 비로그인 시 지우는 방법
 //로그인 시 Crud test
 function CrudTest(){
   const [isLogin, setIsLogin] = useState(false);
+  const [youtubeKeyword, setYoutubeKeyword] = useState("");
+  const [stockKeyword, setStockKeyword] = useState("");
+
 
   const getLoginInfo = async () => {//로그인 여부 체크
     await axios.get(
@@ -81,11 +82,42 @@ function CrudTest(){
     await axios.get('/auth/logout');
   };
   
-  const getYoutubeSearchData = async () => {
-    await axios.get('/api/youtube/search')
+  const getYoutubeKeyword = async () => {
+    await axios.get('/api/youtube/keyword')
       .then(response => {
         console.log(response);
       }).catch(err => {console.log(err)});
+  }
+
+  const deleteYoutubeKeyword = async () => {
+    console.log(youtubeKeyword)
+    await axios.delete('/api/youtube/keyword', {
+      data: {
+        keyword:youtubeKeyword
+      }
+    })
+      .then(response => {
+        console.log(response);
+      }).catch(err => {console.log(err)});    
+  }
+
+  const getStockKeyword = async () => {
+    await axios.get('/api/stock/keyword')
+      .then(response => {
+        console.log(response);
+      }).catch(err => {console.log(err)});
+  }
+
+  const deleteStockKeyword = async () => {
+    console.log(stockKeyword)
+    await axios.delete('/api/stock/keyword', {
+      data: {
+        keyword:stockKeyword
+      }
+    })
+      .then(response => {
+        console.log(response);
+      }).catch(err => {console.log(err)});    
   }
 
   return (
@@ -95,21 +127,24 @@ function CrudTest(){
         isLogin ?       
           (
           <div>
-          <a href="/auth/logout">로그아웃</a> 
-          <button onClick={userRead}>유저정보 조회</button>
-          <button onClick={keywordAdd}>키워드 추가</button>
-          <button onClick={keywordDelete}>키워드 삭제</button>
-          <p>로그인한 녀석의 동영상 정보</p>
-          <button className="test" onClick={getYoutubeSearchData}>
-            사용자가 정한 유튜브 키워드에 해당하는 영상 가져오기
-          </button>
-          <button>유저 수정</button>
+          <a href="/auth/logout">로그아웃</a><br></br>
+          <input className="input" name="youtubekeyword" placeholder="지울 유튜브 키워드 입력하기" onChange={e => setYoutubeKeyword(e.target.value)}></input><br></br>
+          <button onClick={deleteYoutubeKeyword}>Youtube 키워드 지우기</button><br></br>
+          <button className="test" onClick={getYoutubeKeyword}>
+            사용자가 저장한 유튜브 키워드 가져오기
+          </button><br></br>
+          <input className="input" name="stockkeyword" placeholder="지울 주식 종목 입력하기" onChange={e => setStockKeyword(e.target.value)}></input><br></br>
+          <button onClick={deleteStockKeyword}>주식 종목 지우기</button><br></br>
+          <button className="test" onClick={getStockKeyword}>
+            사용자가 저장한 주식 종목 가져오기
+          </button><br></br>
+          <button>유저 수정</button><br></br>
           <a onClick={userDelete} href="/auth/logout">유저 삭제</a>
           </div>
           ): 
           <div>
-          <a href="http://localhost:8001/auth/google">구글 아이디로 로그인</a>
-          <button onClick={addLocalKeyword}>키워드 추가</button>
+          <a href="http://localhost:8001/auth/google">구글 아이디로 로그인</a><br></br>
+          <button onClick={addLocalKeyword}>키워드 추가</button><br></br>
           <button onClick={removeKeyword}>키워드 삭제</button>
           </div>
       }
