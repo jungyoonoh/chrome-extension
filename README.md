@@ -10,7 +10,7 @@
 - 검색 기능    
         
 ## 메인화면    
-![Untitled](https://user-images.githubusercontent.com/29244603/137831171-4220f692-2886-4151-959a-0de91492bb93.png)    
+![image](https://user-images.githubusercontent.com/29244603/150506440-2ccb179d-6848-41af-8af3-1cdb48e24aad.png)    
 
 
 ## 추가예정    
