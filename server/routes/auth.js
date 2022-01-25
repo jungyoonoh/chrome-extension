@@ -23,7 +23,7 @@ router.get('/login', (req,res) => {
 router.get('/logout', (req,res) =>  {
   req.logout();
   req.session.destroy();
-  res.redirect('http://localhost:3000/');
+  res.redirect('http://localhost:8000/');
 });
 
 router.get('/google',
@@ -36,7 +36,7 @@ router.get(
   passport.authenticate('google', {failureRedirect: '/test'}), 
   (req, res) => {
   console.log("로그인 완료");
-  res.redirect('http://localhost:3000/');
+  res.redirect('http://localhost:8000/');
 });
 
 module.exports = router;
