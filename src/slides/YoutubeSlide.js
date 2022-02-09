@@ -6,9 +6,8 @@ import CardM from 'components/CardM';
 
 function YoutubeSlide(){
     const [keyword, setKeyword] = useState('')
-    const onChange=(e)=>{
-        setKeyword(e.target.value)
-        console.log(e.target.value)
+    const onChange = (e) => {
+        setKeyword(e.target.value);
     }
     const [videos, setVideos] = useState([]);
     const [keywords, setKeywords] = useState([]);
@@ -21,10 +20,27 @@ function YoutubeSlide(){
             setKeyword('')
         }
     }
-    const deleteKeyword = (item)=>{
+    const deleteKeyword = (item) => {
         let temp = keywords.slice();
         setKeywords(temp.filter((element) => element !== item));
+        axios
+        .delete('/api/youtube/keyword', {
+            data: {keyword:item}
+        })
+        .then(response => {
+          console.log(response);
+        })
+        .catch(err => {console.log(err)});    
     }
+    // 로그인되어있는경우 유투브 키워드 가져옴
+    useEffect(() => {
+        axios.get('/api/youtube/keyword')
+          .then(response => {
+            console.log(response);
+            setKeywords(response.data);
+          }).catch(err => {console.log(err)});
+    }, []);
+
     useEffect(() => {
         axios
             .post(
@@ -41,7 +57,7 @@ function YoutubeSlide(){
         <>
             <div className="keyword-container">
                 {keywords.map((item)=>{
-                    return(
+                    return (
                         <div className="keyword" onClick={()=>{deleteKeyword(item)}}>{item}</div>
                     )
                 })}
@@ -56,26 +72,24 @@ function YoutubeSlide(){
                 <div className='list_box'>
                     {videos.map((item, index)=> { 
                         if(index < 5){
-                            return(
+                            return (
                                 <div className="list_item">
                                     <CardM title={item.title} thumbnail={item.thumbnails} name={item.channelTitle} url={item.videoUrl}/>
                                 </div>
                             )
                         }
-                    }
-                    )}
+                    })}
                 </div>
                 <div className='list_box'>
                     {videos.map((item, index)=> { 
-                        if(index >= 6 && index < 12){
+                        if(index >= 6 && index < 11){
                             return(
                                 <div className="list_item">
                                     <CardM title={item.title} thumbnail={item.thumbnails} name={item.channelTitle} url={item.videoUrl}/>
                                 </div>
                             )
                         }
-                    }
-                    )}
+                    })}
                 </div>
             </div>
         </>

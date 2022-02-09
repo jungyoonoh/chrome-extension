@@ -12,46 +12,124 @@ function MainSlide() {
     const [searchTerm, setSearchTerm] = useState('')
     const [isInputFocused, setIsInputFocused] = useState(false)
     const onChange=(e)=>{
-        setSearchTerm(e.target.value)
-        console.log(e.target.value)
+        setSearchTerm(e.target.value);
     }
-    const googleSearch=()=>{
-        if (searchTerm!=""){
-            let link="https://www.google.com/search?q="+searchTerm
-            window.open(link)
+    const googleSearch = () => {
+        if (searchTerm!="") {
+            let link="https://www.google.com/search?q=" + searchTerm;
+            window.open(link);
         }
     }
-    const onCheckEnter = (e)=>{
+    const onCheckEnter = (e) => {
         if (e.key==='Enter' && isInputFocused){
-            googleSearch()
+            googleSearch();
         }
     }
+    const [isLogin, setIsLogin] = useState(false);
+    useEffect(()=>{
+        axios.get(
+            '/auth'
+        ).then(response => {
+            console.log(response);
+            if (response.data == "") setIsLogin(false);
+            else setIsLogin(true);
+        }).catch(err => {
+            console.log(err);
+        });
+    },[isLogin]);
+
+    const [testProps, setTestProps] = useState({
+        main: {
+            temp: 266.41,
+            feels_like: 263.63,
+            temp_min: 263.56,
+            temp_max: 267.68,
+            pressure: 1022,
+            humidity: 41
+            },
+        icon: "http://openweathermap.org/img/wn/01n@2x.png",
+        addr: "서울특별시 중구 회현동1가"
+    });
+    const ftoc = (f) => ((parseFloat(f)-32)*5/9).toFixed();
+    // 날씨
+    const [location, setMyLocation]=useState({});
+    // const weatherApi=async()=>{
+    //     if(navigator.geolocation){
+    //       navigator.geolocation.getCurrentPosition(async (position)=>{
+    //         setMyLocation({lat:position.coords.latitude,lon:position.coords.longitude});
+    //         const {data}=await axios.post('/api/weather',{location: location});
+    //         console.log(data);
+    //       },(error)=>{
+    //         console.error(error);
+    //       },{
+    //         enableHighAccuracy:false,
+    //         maximumAge:0,
+    //         timeout:Infinity
+    //       });
+    //     }else{
+    //       alert('GPS를 지원하지 않음');
+    //     }
+    // }
+    // useState(()=>{
+    //     if(navigator.geolocation){
+    //         navigator.geolocation.getCurrentPosition(async (position)=>{
+    //           setMyLocation({lat:position.coords.latitude,lon:position.coords.longitude});
+    //         //   console.log(data);
+    //         },(error)=>{
+    //           console.error(error);
+    //         },{
+    //           enableHighAccuracy:false,
+    //           maximumAge:0,
+    //           timeout:Infinity
+    //         });
+    //       }else{
+    //         alert('GPS를 지원하지 않음');
+    //       }
+    // },[]);
+    // const [weather, setWeather] = useState({
+    //     main: {
+    //         temp: 266.41,
+    //         feels_like: 263.63,
+    //         temp_min: 263.56,
+    //         temp_max: 267.68,
+    //         pressure: 1022,
+    //         humidity: 41
+    //         },
+    //     icon: "http://openweathermap.org/img/wn/01n@2x.png",
+    //     addr: "서울특별시 중구 회현동1가"
+    // });
+    // useEffect(()=>{
+    //     axios
+    //     .post('/api/weather',{location: location})
+    //     .then(response=>{
+    //         console.log(response);
+    //         // setWeather(response.data);
+    //     })
+    // })
     // 2. 자주가는사이트
 
     // 3. 주식 top 5
-    const [stockTop5, setStockTop5] = useState([])
-    const [isStockLoaded, setIsStockLoaded] = useState(false)
-    const defultData = [
+    const [stockTop5, setStockTop5] = useState([
         {rank:'1위', title:'로딩중', price:'', changeRate:'', url:''},
         {rank:'2위', title:'로딩중', price:'', changeRate:'', url:''},
         {rank:'3위', title:'로딩중', price:'', changeRate:'', url:''},
         {rank:'4위', title:'로딩중', price:'', changeRate:'', url:''},
         {rank:'5위', title:'로딩중', price:'', changeRate:'', url:''},
-    ]
+    ])
+    const [isStockLoaded, setIsStockLoaded] = useState(false);
     useEffect(()=>{
         if (!isStockLoaded){
-            setStockTop5(defultData)
             axios.get(
                 '/api/stock'
               ).then(response => {
                 console.log(response.data);
-                let data = response.data
-                setStockTop5(Object.values(data))
-                
+                let data = response;
+                // setStockTop5(Object.values(data));
+                setStockTop5(response.data);
               }).catch(err => {console.log(err)});
             setIsStockLoaded(true)
         }
-    },[isStockLoaded])
+    },[isStockLoaded]);
     // const openStockDetail = (url)=>{
     //     window.open(url)
     // }
@@ -141,6 +219,29 @@ function MainSlide() {
                     })}
                 </ol>
             </section>
+            <div className="popular_section">
+                <section className="popular_contents">
+                    <img src={testProps.icon} alt="맑음" width="30" height="30"/>
+                    <p>{testProps.addr}</p>
+                    <p>
+                        <span className="blind">섭씨</span>
+                            {ftoc(testProps.main.temp)}
+                        <span className="blind">도</span>
+                    </p>
+                    <p>
+                        <span className="blind">최고기온</span>
+                        {ftoc(testProps.main.temp_max)}
+                    </p>
+                    <p>
+                        <span className="blind">최wj기온</span>
+                        {ftoc(testProps.main.temp_min)}
+                    </p>
+                    <p>습도 {testProps.main.humidity}</p>
+                </section>
+                <section className="popular_contents">
+                    뭐였도라
+                </section>
+            </div>
             <div className="popular_section">
                 <section className="popular_contents">
                     <div className="section_title_box">

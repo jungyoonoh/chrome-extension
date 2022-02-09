@@ -4,7 +4,7 @@
 .card_m {
     display: block;
     width: 350px;
-    height: 70px;
+    height: 55px;
     margin: 0 auto;
     padding: 5px 15px 5px 5px;
     border-radius: 5px;
@@ -31,12 +31,17 @@
     margin-top: 5px;
 }
 .card_m .title {
-    overflow: hidden;
-    line-height: 20px;
-    text-overflow: ellipsis;
     display: -webkit-box;
+    overflow: hidden;
+    font-size: 15px;
+    line-height: 16px;
+    text-overflow: ellipsis;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
+}
+.card_m .name {
+    font-size: 13px;
+    line-height: 16px;
 }
 
 .card-l {
