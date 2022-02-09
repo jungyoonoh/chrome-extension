@@ -49,7 +49,7 @@ function CrudTest(){
   const [stockKeyword, setStockKeyword] = useState("");
 
 
-  const getLoginInfo = async () => {//로그인 여부 체크
+  const getLoginInfo = async () => { //로그인 여부 체크
     await axios.get(
       '/auth'
       ).then(response => {
@@ -345,8 +345,8 @@ function Google() {
   }
 
   useEffect(() => {
-      getLoginInfo()
-  }, [isLogin])
+      getLoginInfo();
+  }, [isLogin]);
 
   return (
     <div id="google-test">
