@@ -1,11 +1,22 @@
-import { useEffect, useState,forwardRef, useImperativeHandle} from 'react';
+import React, { useEffect, useState,forwardRef, useImperativeHandle} from 'react';
 import 'css/Main.css';
 import axios from "axios"
 import {GrFormRefresh, GrYoutube, } from 'react-icons/gr'
 import {BiSearch, BiNews, BiRefresh} from 'react-icons/bi'
 import {RiStockFill, } from 'react-icons/ri'
+import useWatchLocation from '../modules/UseCurrentLocation'
+import Moment from 'react-moment'; 
+import 'moment/locale/ko';
+import moment from "moment";
 
-import CardM from "../components/CardM"
+import CardM from "../components/CardM";
+
+// 날씨 옵션 
+const geolocationOptions = {
+    enableHighAccuracy: true,
+    timeout: 1000 * 60 * 1, // 1 min (1000 ms * 60 sec * 1 minute = 60 000ms)
+    maximumAge: 1000 * 3600 * 24, // 24 hour
+}
 
 function MainSlide() {
     // 1. 구글 검색창
@@ -40,7 +51,7 @@ function MainSlide() {
 
     const [testProps, setTestProps] = useState({
         main: {
-            temp: 266.41,
+            temp: 10.41,
             feels_like: 263.63,
             temp_min: 263.56,
             temp_max: 267.68,
@@ -50,13 +61,38 @@ function MainSlide() {
         icon: "http://openweathermap.org/img/wn/01n@2x.png",
         addr: "서울특별시 중구 회현동1가"
     });
-    const ftoc = (f) => ((parseFloat(f)-32)*5/9).toFixed();
+
     // 날씨
-    const [location, setMyLocation]=useState({});
-    // const weatherApi=async()=>{
+    const { location, cancelLocationWatch, error } = useWatchLocation(geolocationOptions);
+    const [ mylocation, setMyLocation ]=useState({});
+
+    useEffect(() => {
+        if (!location) return;
+
+        console.log(location.latitude, location.longitude);
+        setMyLocation({lat:location.latitude, lon:location.longitude});
+
+        axios.post('/api/weather',{location: mylocation})
+        .then(response=>{
+            console.log(response);
+            setWeather(response.data);
+            console.log(weather);
+        })
+        console.log(mylocation)
+
+        // // 5초후에 watch 종료
+        // setTimeout(() => {
+        //     cancelLocationWatch();
+        // }, 5000);
+
+    }, [])
+
+    const ftoc = (f) => ((parseFloat(f)-32)*5/9).toFixed();
+
+    // const weatherApi = async() => {
     //     if(navigator.geolocation){
-    //       navigator.geolocation.getCurrentPosition(async (position)=>{
-    //         setMyLocation({lat:position.coords.latitude,lon:position.coords.longitude});
+    //       navigator.geolocation.getCurrentPosition(async (position) => {
+    //         setMyLocation({lat:position.coords.latitude, lon:position.coords.longitude});
     //         const {data}=await axios.post('/api/weather',{location: location});
     //         console.log(data);
     //       },(error)=>{
@@ -70,42 +106,32 @@ function MainSlide() {
     //       alert('GPS를 지원하지 않음');
     //     }
     // }
-    // useState(()=>{
-    //     if(navigator.geolocation){
-    //         navigator.geolocation.getCurrentPosition(async (position)=>{
-    //           setMyLocation({lat:position.coords.latitude,lon:position.coords.longitude});
-    //         //   console.log(data);
-    //         },(error)=>{
-    //           console.error(error);
-    //         },{
-    //           enableHighAccuracy:false,
-    //           maximumAge:0,
-    //           timeout:Infinity
-    //         });
-    //       }else{
-    //         alert('GPS를 지원하지 않음');
-    //       }
-    // },[]);
-    // const [weather, setWeather] = useState({
-    //     main: {
-    //         temp: 266.41,
-    //         feels_like: 263.63,
-    //         temp_min: 263.56,
-    //         temp_max: 267.68,
-    //         pressure: 1022,
-    //         humidity: 41
-    //         },
-    //     icon: "http://openweathermap.org/img/wn/01n@2x.png",
-    //     addr: "서울특별시 중구 회현동1가"
-    // });
-    // useEffect(()=>{
-    //     axios
-    //     .post('/api/weather',{location: location})
-    //     .then(response=>{
-    //         console.log(response);
-    //         // setWeather(response.data);
-    //     })
-    // })
+
+    const [weather, setWeather] = useState({
+        main: {
+            temp: 266.41,
+            feels_like: 263.63,
+            temp_min: 263.56,
+            temp_max: 267.68,
+            pressure: 1022,
+            humidity: 41
+            },
+        icon: "http://openweathermap.org/img/wn/01n@2x.png",
+        addr: "서울특별시 중구 회현동1가"
+    });
+
+    // 날짜
+    const dayInfo = () => {        
+        let today = moment();
+        return today.format('YYYY년 MM월 DD일');
+    }
+    
+    // 시간
+    const clockInfo = () => {
+        let today = moment();
+        return today.format('A hh:mm');
+    }
+
     // 2. 자주가는사이트
 
     // 3. 주식 top 5
@@ -133,8 +159,8 @@ function MainSlide() {
     // const openStockDetail = (url)=>{
     //     window.open(url)
     // }
-    // 4. 유튜브 top 5
 
+    // 4. 유튜브 top 5
     const [youtubeTop5, setYoutubeTop5] = useState([])
     const [isYoutubeLoaded, setIsYoutubeLoaded] = useState(false)
     useEffect(()=>{
@@ -149,13 +175,13 @@ function MainSlide() {
               setIsYoutubeLoaded(true)
         }
     },[isYoutubeLoaded])
+
     // 5. 뉴스 top 5
     const [newsTop5, setNewsTop5] = useState([])
     const [isNewsLoaded, setIsNewsLoaded] = useState(false)
     
     useEffect(()=>{
-        if (!isNewsLoaded){
-            
+        if (!isNewsLoaded){            
             axios.get(
                 '/api/news'
               ).then(response => {
@@ -220,26 +246,27 @@ function MainSlide() {
                 </ol>
             </section>
             <div className="popular_section">
-                <section className="popular_contents">
+                <section className="weather_contents">
                     <img src={testProps.icon} alt="맑음" width="30" height="30"/>
+                    <div className="temperature">
+                        <span className="blind">섭씨</span>
+                            {ftoc(testProps.main.temp)}℃
+                        <span className="blind">도</span>
+                    </div>
                     <p>{testProps.addr}</p>
                     <p>
-                        <span className="blind">섭씨</span>
-                            {ftoc(testProps.main.temp)}
-                        <span className="blind">도</span>
-                    </p>
-                    <p>
                         <span className="blind">최고기온</span>
-                        {ftoc(testProps.main.temp_max)}
+                        최고기온 : {ftoc(testProps.main.temp_max)}
                     </p>
                     <p>
-                        <span className="blind">최wj기온</span>
-                        {ftoc(testProps.main.temp_min)}
+                        <span className="blind">최저기온</span>
+                        최저기온 : {ftoc(testProps.main.temp_min)}
                     </p>
-                    <p>습도 {testProps.main.humidity}</p>
+                    <p>습도 : {testProps.main.humidity}</p>
                 </section>
-                <section className="popular_contents">
-                    뭐였도라
+                <section className="time_contents">
+                    <p className='day_info'>{dayInfo()}</p>                    
+                    <p className='clock_info'>{clockInfo()}</p>                    
                 </section>
             </div>
             <div className="popular_section">
