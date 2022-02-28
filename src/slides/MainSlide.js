@@ -233,7 +233,7 @@ function MainSlide() {
                         }
                         return(
                             <li className="list_item">
-                                <a href={item.url} target="_blank" className="item_link">
+                                <a href={item.url} target="_blank" className="item_link" rel="noreferrer">
                                     <strong className="item_title">{item.title}</strong>
                                     <div className="item_price_box">
                                         <p className={price}>{item.price}</p>
@@ -270,7 +270,7 @@ function MainSlide() {
                 </section>
             </div>
             <div className="popular_section">
-                <section className="popular_contents">
+               {/* <section className="popular_contents">
                     <div className="section_title_box">
                         <GrYoutube className="section_title_icon"/>
                         <h2 className="section_title">유튜브 인기 동영상</h2>
@@ -286,7 +286,7 @@ function MainSlide() {
                             }
                         })}
                     </ol>
-                </section>
+                    </section>*/}
                 <section className="popular_contents">
                     <div className="section_title_box">
                         <BiNews className='section_title_icon'/>
