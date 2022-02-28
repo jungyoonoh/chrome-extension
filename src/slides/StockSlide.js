@@ -24,7 +24,7 @@ const StockSlide=()=>{
         let temp = keywords.slice();
         setKeywords(temp.filter((element) => element !== item));
         axios
-        .delete('/api/youtube/keyword', {
+        .delete('/api/stock/keyword', {
             data: {keyword:item}
         })
         .then(response => {
