@@ -54,7 +54,6 @@ router.get('/youtube/keyword', async (req, res) => {
   let user = null;
   try {
     user = await User.findOne({_id:req.session.passport.user});
-    console.log(user + "'s Youtube Keyword Search is Successed");
   } catch (err) {
     console.error(err);
     res.status(504).send("Not Logined");
@@ -99,7 +98,6 @@ router.get('/stock/keyword', async (req, res) => {
   let user = null;
   try {
     user = await User.findOne({_id:req.session.passport.user});
-    console.log(user + "'s Stock Keyword Search is Successed");
   } catch (err) {
     console.error(err);
     res.status(504).send("Not Logined");

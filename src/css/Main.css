@@ -15,6 +15,7 @@
 }
 .header {
     padding: 20px 0;
+    position: relative;
 }
 .header_msg {
     margin-bottom: 10px;
@@ -188,7 +189,7 @@
 }
 
 /* 날씨 관련 */
-.weather_contents {
+/* .weather_contents {
     width: 300px;
     height: 100px;
     float: left;
@@ -218,7 +219,7 @@
 .weather_contents p {
     font-size:10px;
     margin: 5px;
-}
+} */
 
 /* 시간 관련 */
 
@@ -226,8 +227,8 @@
     width: 300px;
     height: 100px;
     float: left;
-    margin: 20px 80px;
-    padding: 5px 15px;
+    margin: 20px 60px 20px 100px;
+    padding: 5px 20px;
     color: #fff;
     margin-top: 20px;
 }
