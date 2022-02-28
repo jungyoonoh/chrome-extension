@@ -11,6 +11,8 @@ import { BsFillPersonFill,  } from 'react-icons/bs';
 import {FaInfoCircle, } from 'react-icons/fa';
 import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 import YoutubeSlide from 'slides/YoutubeSlide';
+import Weather from 'components/Weather';
+
 // https://react-icons.github.io/react-icons
 
 const Main = () => {
@@ -30,14 +32,11 @@ const Main = () => {
         }else{
             window.location.href = "http://localhost:8001/auth/google"
         }
-        // const {data}=await axios.get(`/database`);
-        // setUserName(data.displayName)
     }
     const getLoginInfo = async () => {//로그인 여부 체크
         await axios.get(
           '/auth'
           ).then(response => {
-            console.log(response);
             if (response.data == "") setIsLogin(false);
             else setIsLogin(true);
             setUserName(response.data.displayName)
@@ -59,6 +58,7 @@ const Main = () => {
     return (
         <div className="wrap">
             <header className="header">
+                <Weather></Weather>
                 <h1 className="blind">베지-토스트</h1>
                 {userName !== undefined && <p className="header_msg">{userName}님 안녕하세요!</p>}
                 <div className="header_icons">
