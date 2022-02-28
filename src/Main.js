@@ -91,8 +91,8 @@ const Main = () => {
                     ref={slideRef}
                     arrows={false}
                     infinite={true}>
-                        <MainSlide></MainSlide>
-                        <YoutubeSlide></YoutubeSlide>
+                        {/*<MainSlide></MainSlide>*/}
+                       {/* <YoutubeSlide></YoutubeSlide>*/}
                         <StockSlide></StockSlide>
                 </Slider>
             </main>
