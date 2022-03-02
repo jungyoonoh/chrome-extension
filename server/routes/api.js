@@ -19,6 +19,9 @@ const stockService = require("../domain/stock.js")
 // DAO Domain
 const youtubeKeywordDao = require('../database/keyword/youtube.js');
 
+// auth
+const auth = require('../middleware/auth.js');
+
 // ------------------------------------------------------------------
 // Naver News API
 // ------------------------------------------------------------------
@@ -50,33 +53,38 @@ router.post('/youtube', youtubeService.searchVideo)
 // Youtube Keyword of User
 // ------------------------------------------------------------------
 
-router.get('/youtube/keyword', async (req, res) => {
+router.get('/youtube/keyword', auth.isLogin, async (req, res) => {
   let user = null;
+  let keywordList = new Array();
+
   try {
     user = await User.findOne({_id:req.session.passport.user});
   } catch (err) {
-    console.error(err);
+    console.error("not Logined");
     res.status(504).send("Not Logined");
   }
 
   if (user.youtubeKeyword.length == 0){
     res.status(200).send("NO DATA");
   }else{
-    let keywordList = new Array();
     for(var i = 0; i < user.youtubeKeyword.length; i++){
       keywordList.push(user.youtubeKeyword[i]);
     }
     res.send(keywordList);
   }
 })
-router.delete('/youtube/keyword', async (req, res) => {
+router.delete('/youtube/keyword', auth.isLogin, async (req, res) => {
+  if (!auth.isLogin()){
+    console.log("Not Logined");
+    res.status(200).send("Not Logined");
+  }
   try {
     result = await User.updateOne({_id:req.session.passport.user}, {$pull: {youtubeKeyword : req.body.keyword}});
     console.log(req.body.keyword + " is Deleted");
     res.status(200).send("DELETE SUCCESS");
   } catch (err) {
     console.error(err);
-    res.status(504).send("Not Logined || Keyword ERROR");
+    res.status(504).send("Delete Keyword ERROR");
   }
 })
 
@@ -94,19 +102,20 @@ router.post('/stock', stockService.getStockInfo)
 // Stock Keyword of User
 // ------------------------------------------------------------------
 
-router.get('/stock/keyword', async (req, res) => {
+router.get('/stock/keyword', auth.isLogin, async (req, res) => {
   let user = null;
+  let keywordList = new Array();
+
   try {
     user = await User.findOne({_id:req.session.passport.user});
   } catch (err) {
     console.error(err);
-    res.status(504).send("Not Logined");
+    res.status(504).send("USER NOT FOUND");
   }
 
   if (user.stockKeyword.length == 0){
     res.status(200).send("NO DATA");
   }else{
-    let keywordList = new Array();
     for(var i = 0; i < user.stockKeyword.length; i++){
       keywordList.push(user.stockKeyword[i]);
     }
@@ -114,14 +123,15 @@ router.get('/stock/keyword', async (req, res) => {
   }
 })
 
-router.delete('/stock/keyword', async (req, res) => {
+router.delete('/stock/keyword', auth.isLogin, async (req, res) => {
+
   try {
     let result = await User.updateOne({_id:req.session.passport.user}, {$pull: {stockKeyword : req.body.keyword}});
     console.log(req.body.keyword + " is Deleted");
     res.status(200).send("DELETE SUCCESS");
   } catch (err) {
     console.error(err);
-    res.status(504).send("Not Logined || Keyword ERROR");
+    res.status(504).send("Delete Keyword ERROR");
   }
 })
 
