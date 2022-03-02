@@ -183,7 +183,7 @@ function Weather(){
     if(navigator.geolocation){
       navigator.geolocation.getCurrentPosition(async (position)=>{
         setMyLocation({lat:position.coords.latitude,lon:position.coords.longitude});
-        const {data}=await axios.post('/api/weather',{location: location});
+        const {data}=await axios.post('/api/weather',{lat:position.coords.latitude,lon:position.coords.longitude});
         console.log(data);
       },(error)=>{
         console.error(error);
