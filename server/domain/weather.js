@@ -20,8 +20,9 @@ exports.getWeather=async(req,res)=>{
 }
 
 exports.postWeather=async(req,res)=>{
-    const{location}=req.body;
-    // const url=`https://api.openweathermap.org/data/2.5/weather?lat=${location.lat}&lon=${location.lon}&appid=${process.env.WEATHER_API_KEY}`;
+    const location = req.body;
+    console.log("위치정보 : " + location);
+    
      const url=`https://api.openweathermap.org/data/2.5/weather`;
      const params={
        lat:location.lat,

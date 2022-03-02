@@ -42,6 +42,6 @@
   content: "";
 }
 
-.stock_list .list_item + .list_item {
+/* .stock_list .list_item + .list_item {
   margin-top: 10px;
-}
+} */
