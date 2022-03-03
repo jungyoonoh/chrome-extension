@@ -91,7 +91,7 @@ const Weather = () => {
                     {ftoc(weatherInfo.main.temp)}℃
                 <span className="blind">도</span>
             </div>
-            <p>{testProps.addr}</p>
+            <p>{weatherInfo.addr}</p>
             <p>
                 <span className="blind">최고기온</span>
                 최고기온 : {ftoc(weatherInfo.main.temp_max)}℃
