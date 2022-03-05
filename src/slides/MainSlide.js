@@ -1,3 +1,4 @@
+ /*global chrome*/
 import React, { useEffect, useState,forwardRef, useImperativeHandle} from 'react';
 import 'css/Main.css';
 import axios from "axios"
@@ -67,7 +68,29 @@ function MainSlide() {
     }
 
     // 2. 자주가는사이트
+    const [topSites,setTopSites]=useState([
+        {title: 'NAVER', url: 'http://www.naver.com/'},
+        {title: 'YouTube', url: 'https://www.youtube.com/'},
+        {title: 'React App', url: 'http://localhost:8000/'},
+        {title: 'GitHub', url: 'https://github.com/'},
+        {title: '무신사 스토어', url: 'https://store.musinsa.com/app/'},
+        {title: '건국대학교 eCampus', url: 'http://ecampus.konkuk.ac.kr/ilos/main/main_form.acl'},
+        {title: '건국대학교 PORTAL', url: 'https://portal.konkuk.ac.kr/'},
+        {title: '건국대학교 수강신청 시스템::', url: 'https://sugang.konkuk.ac.kr/'},
+    ]);
+    const userTopSites=()=>{
+        chrome.topSites.get((data)=>{
+            setTopSites(data);
+        });
+    }
+    useEffect(()=>{
+        userTopSites();
+    },[])
+    
 
+    useEffect(()=>{
+        console.log(topSites);
+    },[topSites]);
     // 3. 주식 top 5
     const [stockTop5, setStockTop5] = useState([
         {rank:'1위', title:'로딩중', price:'', changeRate:'', url:''},
@@ -167,7 +190,7 @@ function MainSlide() {
                         }
                         return(
                             <li className="list_item">
-                                <a href={item.url} target="_blank" className="item_link">
+                                <a href={item.url} target="_blank" className="item_link" rel="noreferrer">
                                     <strong className="item_title">{item.title}</strong>
                                     <div className="item_price_box">
                                         <p className={price}>{item.price}</p>
@@ -183,6 +206,24 @@ function MainSlide() {
                 <section className="time_contents">
                     <p className='day_info'>{dayInfo()}</p>                    
                     <p className='clock_info'>{clockInfo()}</p>                    
+                </section>
+                <section className="topSites_contents">
+                    <ul className='topSites_list'>
+                    {
+                        topSites.map((item,idx)=>{
+                            if(idx<8){
+                            return(
+                                <li className='topSites_item'>
+                                <a href={item.url}>
+                                    <img className='topSites_img' alt="" src={'https://www.google.com/s2/favicons?sz=24&domain='+item.url}/>
+                                    <strong className='topSites_label'>{item.title}</strong>
+                                </a>
+                                </li>
+                            )
+                            }
+                        })
+                    }
+                    </ul>                 
                 </section>
             </div>
             <div className="popular_section">

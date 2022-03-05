@@ -46,6 +46,7 @@ exports.postWeather=async(req,res)=>{
           method:'get',
           params:params,
         };
+        console.log(address);
         axios(options).then((response)=>{
           if(response.status===200){
             const result= response.data;

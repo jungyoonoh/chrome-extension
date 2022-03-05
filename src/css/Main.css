@@ -2,191 +2,191 @@
 @import url("base.css");
 
 .wrap {
-    overflow-y: auto;
-    width: 1000px;
-    height: 100vh;
-    margin: 0 auto;
-    background-color: rgba(0,0,0,0.5);
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+  overflow-y: auto;
+  width: 1000px;
+  height: 100vh;
+  margin: 0 auto;
+  background-color: rgba(0, 0, 0, 0.5);
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 .wrap::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
 .header {
-    margin-bottom: 60px;
-    padding: 20px 0;
-    position: relative;
+  margin-bottom: 60px;
+  padding: 20px 0;
+  position: relative;
 }
 .header_msg {
-    margin-bottom: 10px;
-    text-align: center;
-    color: #fff;
+  margin-bottom: 10px;
+  text-align: center;
+  color: #fff;
 }
 .header_icons {
-    text-align: center;
+  text-align: center;
 }
 .header_button {
-    width: 20px;
-    height: 20px;
-    margin: 0 4px;
+  width: 20px;
+  height: 20px;
+  margin: 0 4px;
 }
 .header_button:hover .header_icon {
-    color: #2ec4b6;
+  color: #2ec4b6;
 }
 .header_icon {
-    width:20px;
-    height:20px;
-    color: #fff;
+  width: 20px;
+  height: 20px;
+  color: #fff;
 }
 .google_search {
-    text-align: center;
-    height: 30px;
+  text-align: center;
+  height: 30px;
 }
 .google_search::before {
-    display: inline-block;
-    width: 10px;
-    height: 30px;
-    border-radius: 5px 0 0 5px;
-    background-color: #2ec4b6;
-    vertical-align: top;
-    content: '';
+  display: inline-block;
+  width: 10px;
+  height: 30px;
+  border-radius: 5px 0 0 5px;
+  background-color: #2ec4b6;
+  vertical-align: top;
+  content: "";
 }
 .google_search_input {
-    width: 300px;
-    height: 20px;
-    padding: 5px;
-    border: 0px;
-    background-color: #fff;
-    vertical-align: top;
+  width: 300px;
+  height: 20px;
+  padding: 5px;
+  border: 0px;
+  background-color: #fff;
+  vertical-align: top;
 }
 .google_search_button {
-    width: 30px;
-    height: 30px;
-    border: 0px;
-    border-radius: 0 5px 5px 0;
-    background-color: #2ec4b6;
-    vertical-align: top;
+  width: 30px;
+  height: 30px;
+  border: 0px;
+  border-radius: 0 5px 5px 0;
+  background-color: #2ec4b6;
+  vertical-align: top;
 }
 .google_search_icon {
-    display: block;
-    width: 20px;
-    height: 20px;
-    margin: 5px;
-    color: #fff;
+  display: block;
+  width: 20px;
+  height: 20px;
+  margin: 5px;
+  color: #fff;
 }
 .section_title_box {
-    margin-top: 20px;
-    margin-bottom: 10px;
-    text-align: center;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  text-align: center;
 }
 .section_title_icon {
-    display: inline-block;
-    width: 25px;
-    height: 25px;
-    margin-right: 5px;
-    vertical-align: top;
-    color: #fff;
+  display: inline-block;
+  width: 25px;
+  height: 25px;
+  margin-right: 5px;
+  vertical-align: top;
+  color: #fff;
 }
 .section_title {
-    display: inline-block;
-    font-size: 20px;
-    vertical-align: top;
-    color: #fff;
+  display: inline-block;
+  font-size: 20px;
+  vertical-align: top;
+  color: #fff;
 }
 .main_slide .refresh_button {
-    width: 25px;
-    height: 25px;
-    vertical-align: top;
+  width: 25px;
+  height: 25px;
+  vertical-align: top;
 }
 .main_slide .refresh_icon {
-    width: 25px;
-    height: 25px;
-    margin-left: 3px;
-    color: #2ec4b6;
-    transition: all 0.5s linear;
+  width: 25px;
+  height: 25px;
+  margin-left: 3px;
+  color: #2ec4b6;
+  transition: all 0.5s linear;
 }
 .main_slide .refresh_icon:hover {
-    transform: rotate(180deg);
+  transform: rotate(180deg);
 }
 .main_slide .stock_list {
-    margin-top: 10px;
-    text-align: center;
+  margin-top: 10px;
+  text-align: center;
 }
 .stock_ranking .list_item {
-    display: inline-block;
-    width: 130px;
-    margin: 0 5px;
-    padding: 10px;
-    border-radius: 5px;
-    background-color: #fff;
-    vertical-align: top;
+  display: inline-block;
+  width: 130px;
+  margin: 0 5px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #fff;
+  vertical-align: top;
 }
 .stock_ranking .item_link {
-    color: #000;
+  color: #000;
 }
 .stock_ranking .item_rank {
-    display: inline-block;
-    vertical-align: top;
-    color: #595959;
+  display: inline-block;
+  vertical-align: top;
+  color: #595959;
 }
 .stock_ranking .item_title {
-    overflow: hidden;
-    display: block;
-    font-size: 14px;
-    font-weight: 600;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    color: #222;
+  overflow: hidden;
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #222;
 }
 .stock_ranking .item_price_box {
-    margin-top: 3px;
-    font-size: 13px;
+  margin-top: 3px;
+  font-size: 13px;
 }
 .stock_ranking .item_price_box::after {
-    display: block;
-    clear: both;
-    content: '';
+  display: block;
+  clear: both;
+  content: "";
 }
 .stock_ranking .item_price {
-    float: left;
-    max-width: 80px;
-    margin-left: 10px;
-    color: #595959;
+  float: left;
+  max-width: 80px;
+  margin-left: 10px;
+  color: #595959;
 }
 .stock_ranking .item_price.up {
-    color: #ed0101;
+  color: #ed0101;
 }
 .stock_ranking .item_price.down {
-    color: #0c44ac;
+  color: #0c44ac;
 }
 .stock_ranking .item_change_rate {
-    float: right;
-    max-width: 80px;
-    margin-right: 10px;
-    color: #595959;
+  float: right;
+  max-width: 80px;
+  margin-right: 10px;
+  color: #595959;
 }
 .stock_ranking .item_change_rate.up {
-    color: #970005;
+  color: #970005;
 }
 .stock_ranking .item_change_rate.down {
-    color: #000052;
+  color: #000052;
 }
 .stock_ranking .item_change_rate.em {
-    font-weight: 600;
+  font-weight: 600;
 }
 .popular_section::after {
-    display: block;
-    clear: both;
-    content: '';
+  display: block;
+  clear: both;
+  content: "";
 }
 .popular_contents {
-    width: 500px;
-    float: left;
-    color: #fff;
+  width: 500px;
+  float: left;
+  color: #fff;
 }
 .popular_contents_list .list_item + .list_item {
-    margin-top: 10px;
+  margin-top: 10px;
 }
 
 /* 날씨 관련 */
@@ -225,21 +225,57 @@
 /* 시간 관련 */
 
 .time_contents {
-    width: 300px;
-    height: 100px;
-    float: left;
-    margin: 20px 60px 20px 100px;
-    padding: 5px 20px;
-    color: #fff;
-    margin-top: 20px;
+  width: 300px;
+  height: 100px;
+  float: left;
+  margin: 20px 60px 20px 100px;
+  padding: 5px 20px;
+  color: #fff;
+  margin-top: 20px;
 }
 
-.time_contents .day_info{
-    display: block;
-    margin: 5px 0;
-    font-size: 18px;
+.time_contents .day_info {
+  display: block;
+  margin: 5px 0;
+  font-size: 18px;
 }
 
-.time_contents .clock_info{
-    font-size: 40px;
+.time_contents .clock_info {
+  font-size: 40px;
+}
+.topSites_contents {
+  width: 450px;
+  height: 100px;
+  margin: 20px 0px 30px 10px;
+  padding: 5px 20px;
+  float: left;
+}
+.topSites_list {
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+.topSites_item {
+  float: left;
+  margin-bottom: 10px;
+  margin-left: 10px;
+}
+.topSites_img {
+  width: 30px;
+  height: 30px;
+  display: block;
+  margin: 0px auto;
+  border-radius: 50%;
+  background-color: white;
+}
+
+.topSites_label {
+  display: inline-block;
+  width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: white;
+  margin-top: 10px;
 }
