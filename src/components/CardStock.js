@@ -9,8 +9,14 @@ const CardStock=(props)=>{
             <div className="content">
                 <p className="capitalizationRank">{capitalizationRank}</p>
                 <strong className="title">{title}</strong>
-                <p className="price">현재가 : {price} {changePrice} {changeRate}</p>
-
+                <p className="price"><bold>현재가</bold> : {price} </p>
+                <p className='change'>
+                    {
+                        changePrice>0?<span className='changePrice _up'>{changePrice}</span>
+                        :<span className='changePrice _down'>{changePrice}</span> 
+                    }
+                    <span className='changeRate'>{changeRate}</span>
+                </p>
                 {
                     yesterday?(<p className="yesterday">전일 종가 : {yesterday}</p>):<></>
                 }

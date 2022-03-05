@@ -78,14 +78,14 @@ function MainSlide() {
         {title: '건국대학교 PORTAL', url: 'https://portal.konkuk.ac.kr/'},
         {title: '건국대학교 수강신청 시스템::', url: 'https://sugang.konkuk.ac.kr/'},
     ]);
-    const userTopSites=()=>{
-        chrome.topSites.get((data)=>{
-            setTopSites(data);
-        });
-    }
-    useEffect(()=>{
-        userTopSites();
-    },[])
+    // const userTopSites=()=>{
+    //     chrome.topSites.get((data)=>{
+    //         setTopSites(data);
+    //     });
+    // }
+    // useEffect(()=>{
+    //     userTopSites();
+    // },[])
     
 
     useEffect(()=>{
@@ -108,6 +108,7 @@ function MainSlide() {
                 console.log(response.data);
                 let data = response;
                 // setStockTop5(Object.values(data));
+
                 setStockTop5(response.data);
               }).catch(err => {console.log(err)});
             setIsStockLoaded(true)

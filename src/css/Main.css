@@ -225,10 +225,10 @@
 /* 시간 관련 */
 
 .time_contents {
-  width: 300px;
+  width: 200px;
   height: 100px;
   float: left;
-  margin: 20px 60px 20px 100px;
+  margin: 20px 0px 20px 100px;
   padding: 5px 20px;
   color: #fff;
   margin-top: 20px;
@@ -244,7 +244,7 @@
   font-size: 40px;
 }
 .topSites_contents {
-  width: 450px;
+  width: 500px;
   height: 100px;
   margin: 20px 0px 30px 10px;
   padding: 5px 20px;
@@ -259,7 +259,7 @@
 .topSites_item {
   float: left;
   margin-bottom: 10px;
-  margin-left: 10px;
+  margin-left: 5px;
 }
 .topSites_img {
   width: 30px;
@@ -272,10 +272,11 @@
 
 .topSites_label {
   display: inline-block;
-  width: 100px;
+  width: 95px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   color: white;
   margin-top: 10px;
+  font-size: 15px;
 }
