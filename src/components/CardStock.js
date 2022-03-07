@@ -8,6 +8,7 @@ const CardStock=(props)=>{
         <a href={'!#'} target="_blank" className="card_stock" rel="noreferrer" >
             <div className="content">
                 <p className="capitalizationRank">{capitalizationRank}</p>
+                <br/>
                 <strong className="title">{title}</strong>
                 <p className="price"><bold>현재가</bold> : {price} </p>
                 <p className='change'>
@@ -20,6 +21,7 @@ const CardStock=(props)=>{
                 {
                     yesterday?(<p className="yesterday">전일 종가 : {yesterday}</p>):<></>
                 }
+                  <br/>
                 <p className="capitalization">거래량 : {capitalization}</p>
                 <p className="tradingVolume">시가 총액 : {tradingVolume}</p>
             </div>
