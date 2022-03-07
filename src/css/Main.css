@@ -189,49 +189,16 @@
   margin-top: 10px;
 }
 
-/* 날씨 관련 */
-/* .weather_contents {
-    width: 300px;
-    height: 100px;
-    float: left;
-    margin: 20px 80px;
-    padding: 5px 15px;
-    color: #fff;
-    margin-top: 20px;
-}
-
-.weather_contents img{
-    width: 50px;
-    height: 50px;
-    margin: 25px 0;
-    display: block;
-    float: left;
-}
-
-.weather_contents .temperature{
-    margin: 25px 0;
-    height: 50px;
-    font-size: 40px;
-    display: block;
-    float: left;
-    margin-right: 30px;
-}
-
-.weather_contents p {
-    font-size:10px;
-    margin: 5px;
-} */
-
 /* 시간 관련 */
 
 .time_contents {
-  width: 200px;
-  height: 100px;
-  float: left;
-  margin: 20px 0px 20px 100px;
-  padding: 5px 20px;
-  color: #fff;
-  margin-top: 20px;
+    width: 300px;
+    height: 100px;
+    float: left;
+    margin: 20px 60px 0 100px;
+    padding: 5px 20px;
+    color: #fff;
+    margin-top: 20px;
 }
 
 .time_contents .day_info {
@@ -241,6 +208,7 @@
 }
 
 .time_contents .clock_info {
+  margin: 10px 0;
   font-size: 40px;
 }
 .topSites_contents {

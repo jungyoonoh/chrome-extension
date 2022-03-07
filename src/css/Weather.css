@@ -1,5 +1,14 @@
 .weather_box {
-    width: 600px;
+    width: 300px;
+    height: 100px;
+    position: absolute;
+    float: left;
+    color: #fff;
+    margin-left: 20px;
+}
+
+.weather_box .loading{
+    width: 300px;
     height: 100px;
     position: absolute;
     float: left;
