@@ -65,7 +65,7 @@ fs.readFile('../server/data/stockCodeUrl_pc.json', 'utf8', (err, jsonFile) => {
 })
 
 exports.getStockInfo = async (req, res) => {
-    const title = req.body.keyword;
+  const title = req.body.keyword;
   try{
     const dbRes = await User.updateOne({_id:req.session.passport.user}, {$addToSet: {stockKeyword: title}});
   } catch (err) {

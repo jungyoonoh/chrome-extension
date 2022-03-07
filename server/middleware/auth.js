@@ -3,7 +3,7 @@ exports.isLogin = (req, res, next) => {
         next();
     }
     else {
-        res.status(504).send("Not Logined");
+        res.status(401).send("Unauthorized Access");
     }
 }
 

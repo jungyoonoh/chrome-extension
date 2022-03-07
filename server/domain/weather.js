@@ -21,7 +21,7 @@ exports.getWeather=async(req,res)=>{
 
 exports.postWeather=async(req,res)=>{
     const location = req.body;
-    console.log("위치정보 : " + location);
+    console.log("위치정보 : " + location.lon + location.lat);
     
     const locationUrl=`https://dapi.kakao.com/v2/local/geo/coord2address.json?x=${location.lon}&y=${location.lat}`;
     const options={
@@ -34,7 +34,7 @@ exports.postWeather=async(req,res)=>{
       if(response.status === 200){
         console.log(response.data);
         const {documents}=response.data;
-        const address=documents[0].road_address.address_name;
+        const address=documents[0].address.address_name;
         const url=`https://api.openweathermap.org/data/2.5/weather`;
         const params={
           lat:location.lat,
@@ -65,5 +65,4 @@ exports.postWeather=async(req,res)=>{
     }).catch((error)=>{
       console.log(error);
     });
-
 }
