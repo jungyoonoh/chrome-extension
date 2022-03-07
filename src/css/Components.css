@@ -69,7 +69,7 @@
 .card_stock {
   display: block;
   width: 300px;
-  height: 130px;
+  height: 190px;
   margin-left: 10px;
   float: left;
   margin-top: 5px;
@@ -80,4 +80,16 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
   color: #222;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+._up {
+  color: #ed0101;
+}
+._down {
+  color: #0c44ac;
+}
+.changePrice {
+  margin-right: 10px;
+}
+.changeRate {
+  color: #970005;
 }

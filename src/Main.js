@@ -58,7 +58,7 @@ const Main = () => {
     return (
         <div className="wrap">
             <header className="header">
-                <Weather></Weather>
+                {/* <Weather></Weather> */}
                 <h1 className="blind">베지-토스트</h1>
                 {userName !== undefined && <p className="header_msg">{userName}님 안녕하세요!</p>}
                 <div className="header_icons">

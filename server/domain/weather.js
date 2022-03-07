@@ -34,7 +34,16 @@ exports.postWeather=async(req,res)=>{
       if(response.status === 200){
         console.log(response.data);
         const {documents}=response.data;
+<<<<<<< HEAD
         const address=documents[0].address.address_name;
+=======
+        let address;
+        if(documents[0].road_address){
+          address=documents[0].road_address.address_name;
+        }else{
+          address=documents[0].address.address_name;
+        }
+>>>>>>> e740839d3ea13de00f346eca5516a909def76ade
         const url=`https://api.openweathermap.org/data/2.5/weather`;
         const params={
           lat:location.lat,
@@ -46,6 +55,7 @@ exports.postWeather=async(req,res)=>{
           method:'get',
           params:params,
         };
+        console.log(address);
         axios(options).then((response)=>{
           if(response.status===200){
             const result= response.data;
