@@ -17,6 +17,7 @@ const StockSlide=()=>{
             let temp = keywords.slice();
             temp.push(keyword);
             setKeywords(temp);
+
             setKeyword('')
         }
     }
@@ -43,18 +44,20 @@ const StockSlide=()=>{
 
      useEffect(() => {
          setStockList([]);
-         for(let i=0;i<keywords.length;i++){
-            axios
-            .post(
-                '/api/stock', 
-                {keyword:keywords[i]})
-            .then(response => {
-                console.log("response", response);
-                setStockList(arr=>[...arr,response.data]);
-            })
-            .catch(err => {console.log(err)});
-         }
-  
+        //순서가 중요하면 callback, 아니면 promise
+         let params=[];
+         keywords.forEach(element => {
+             params.push({keyword:element});
+         });
+         Promise.all(
+             params.map(async param=>{
+                 return await axios.post('/api/stock', param)
+             })
+         ).then((response)=>{
+             response.forEach(res=>{
+                 setStockList(arr=>[...arr,res.data])
+             })
+         }).catch(err => {console.log(err)});
      }, [keywords]);
     
     return (
@@ -75,10 +78,9 @@ const StockSlide=()=>{
              <div className='stock_list'>
              <div className='list_box'>
                      {stockList.map((item, index)=> { 
-                         
                              return (
                                  <div className="list_item">
-                                      <CardStock title={item.title} changePrice={item.changePrice} changeRate={item.changeRate} yesterday={item.yesterday}
+                                      <CardStock title={item.title} price={item.price} changePrice={item.changePrice} changeRate={item.changeRate} yesterday={item.yesterday}
                                       capitalization={item.capitalization} capitalizationRank={item.capitalizationRank} tradingVolume={item.tradingVolume}
                                       thumbnail={item.thumbnails} name={item.channelTitle} url={item.videoUrl}/> 
                                  </div>
