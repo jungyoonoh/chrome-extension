@@ -9,12 +9,9 @@
 - 검색 기능    
 - 사용자가 지정한 키워드 모음의 유튜브 영상들    
 - 오늘의 날씨    
-- 요일, 시간 정보         
+- 요일, 시간 정보    
+- 자주가는 사이트    
+- 주식 종목별 상세 정보 페이지       
 
 ## 메인화면    
-![image](https://user-images.githubusercontent.com/29244603/150506440-2ccb179d-6848-41af-8af3-1cdb48e24aad.png)    
-
-
-## 추가예정    
-- 주식 종목별 상세 정보 페이지       
-- 자주가는 사이트    
+![image](https://user-images.githubusercontent.com/29244603/159108268-b70ac3ca-1490-4682-90b4-7dae5d1ec304.png)
