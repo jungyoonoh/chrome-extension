@@ -10,7 +10,6 @@
 .weather_box .loading{
     width: 300px;
     height: 100px;
-    position: absolute;
     float: left;
     color: #fff;
     margin-left: 20px;

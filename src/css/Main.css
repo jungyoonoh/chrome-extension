@@ -192,7 +192,7 @@
 /* 시간 관련 */
 
 .time_contents {
-    width: 300px;
+    width: 200px;
     height: 100px;
     float: left;
     margin: 20px 60px 0 100px;
@@ -212,7 +212,7 @@
   font-size: 40px;
 }
 .topSites_contents {
-  width: 500px;
+  width: 550px;
   height: 100px;
   margin: 20px 0px 30px 10px;
   padding: 5px 20px;
