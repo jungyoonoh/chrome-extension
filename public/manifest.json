@@ -1,8 +1,8 @@
 {
-  "manifest_version": 2,
-
   "name": "Toast",
-  "version": "1.0",
+  "version": "0.0.1",
+  "manifest_version": 2,
+  "description": "유튜브, 주식, 뉴스 등 종합 정보 디스플레이 서비스",
 
 
   "permissions": ["activeTab", "topSites"],
