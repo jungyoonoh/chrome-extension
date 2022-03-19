@@ -74,9 +74,9 @@ function MainSlide() {
         {title: 'React App', url: 'http://localhost:8000/'},
         {title: 'GitHub', url: 'https://github.com/'},
         {title: '무신사 스토어', url: 'https://store.musinsa.com/app/'},
-        {title: '건국대학교 eCampus', url: 'http://ecampus.konkuk.ac.kr/ilos/main/main_form.acl'},
-        {title: '건국대학교 PORTAL', url: 'https://portal.konkuk.ac.kr/'},
-        {title: '건국대학교 수강신청 시스템::', url: 'https://sugang.konkuk.ac.kr/'},
+        {title: '건국대학교', url: 'http://www.konkuk.ac.kr/'},
+        {title: 'Notion', url: 'https://www.notion.so/'},
+        {title: '롤 전적 검색 OP.GG', url: 'https://www.op.gg/'},
     ]);
     // const userTopSites=()=>{
     //     chrome.topSites.get((data)=>{
